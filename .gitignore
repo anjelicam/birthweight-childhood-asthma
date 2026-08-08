@@ -1,2 +1,6 @@
 data/raw/
 *.sas7bdat
+.Rproj.user
+
+/.quarto/
+**/*.quarto_ipynb

@@ -1,3 +1,0 @@
-"0","# Model 1: odds ratio + CI for low birth weight"
-"0","tidy(model1, exponentiate = TRUE, conf.int = TRUE) |> "
-"0","  filter(str_detect(term, ""birth_weight_low"")) "

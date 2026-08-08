@@ -1,4 +1,0 @@
-"0",""
-"0","# Model 2: same, age-adjusted"
-"0","tidy(model2, exponentiate = TRUE, conf.int = TRUE) |> "
-"0","  filter(str_detect(term, ""birth_weight_low"")) "

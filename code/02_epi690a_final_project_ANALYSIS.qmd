@@ -629,9 +629,12 @@ We then created a forest plot of the fully adjusted model, displaying the adjust
 
 ```{r}
 overall <- bind_rows(
-  tidy(model1, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Unadjusted"),
-  tidy(model2, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Age-adjusted"),
-  tidy(model3, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Fully adjusted")
+  tidy(model1, exponentiate = TRUE, conf.int = TRUE) |> 
+    mutate(model = "Unadjusted"),
+  tidy(model2, exponentiate = TRUE, conf.int = TRUE) |> 
+    mutate(model = "Age-adjusted"),
+  tidy(model3, exponentiate = TRUE, conf.int = TRUE) |> 
+    mutate(model = "Fully adjusted")
 ) |>
   filter(str_detect(term, "birth_weight_low")) |>
   mutate(model = factor(model, levels = c("Fully adjusted", "Age-adjusted", "Unadjusted")))
@@ -639,15 +642,19 @@ overall <- bind_rows(
 ggplot(overall, aes(x = estimate, y = model)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
   geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
-  labs(title = "Low Birth Weight and Asthma Odds Across Models",
-       subtitle = "Association attenuates with adjustment but remains significant",
-       x = "Odds ratio (95% CI)", y = NULL,
-       caption = "Data from 2023 National Survey of Children's Health (NSCH)") +
+  labs(
+    title = "Low Birth Weight and Asthma Odds Across Models",
+    subtitle = "Association attenuates with adjustment but remains significant",
+    x = "Odds ratio (95% CI)", y = NULL,
+    caption = "Data from 2023 National Survey of Children's Health (NSCH)"
+  ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 11,
-                              face = "bold",
-                              hjust = 0.5),
+    plot.title = element_text(
+      size = 11,
+      face = "bold",
+      hjust = 0.5
+    ),
     plot.subtitle = element_text(size = 10, hjust = 0.5),
     axis.title.x = element_text(margin = margin(t = 10), size = 9),
     axis.title.y = element_text(margin = margin(r = 10), size = 9),
@@ -655,7 +662,8 @@ ggplot(overall, aes(x = estimate, y = model)) +
       size = 8,
       color = "darkgray",
       margin = margin(t = 15, b = 10, unit = "pt")
-    ))
+    )
+  )
 ```
 
 ```{r}
@@ -670,12 +678,26 @@ tidy(model2, exponentiate = TRUE, conf.int = TRUE) |>
 # Model 3: same, fully adjusted
 tidy(model3, exponentiate = TRUE, conf.int = TRUE) |> 
   filter(str_detect(term, "birth_weight_low")) 
+```
 
-# sample size for each model
-nobs(model1)
-nobs(model2)
-nobs(model3)
+```{r}
+# Sanity check: confirm nobs() matches manual listwise deletion.
+# If these two numbers differ for any model, NAs are being dropped
+# somewhere unexpected (or a variable isn't in the model formula).
 
+check_obs <- function(label, model) {
+  vars <- all.vars(formula(model))
+  manual <- df |> select(all_of(vars)) |> drop_na() |> nrow()
+  cat("===============", label, "===============\n")
+  cat("Observations after manual removal:", manual, "\n")
+  cat("Observations in model:", nobs(model), "\n\n")
+}
+
+cat("Total observations in df:", nrow(df), "\n\n")
+
+check_obs("MODEL 1", model1)
+check_obs("MODEL 2", model2)
+check_obs("MODEL 3", model3)
 ```
 
 ***Interpretation***
