@@ -1,0 +1,4 @@
+"0",""
+"0","# Checking frequency of each poverty code"
+"0","df |>"
+"0","  count(poverty)"

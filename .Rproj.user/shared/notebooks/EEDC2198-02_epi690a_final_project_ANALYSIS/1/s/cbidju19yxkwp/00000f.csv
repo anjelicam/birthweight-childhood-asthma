@@ -1,0 +1,4 @@
+"0","# Set ""No"" (normal birth weight) as the reference so ORs read ""low vs normal"""
+"0","df$birth_weight_low <- relevel(df$birth_weight_low, ref = ""No"")"
+"0","df$born_early <- relevel(df$born_early, ref = ""No"")"
+"0","df$asthma <- relevel(df$asthma, ref = ""No"")"

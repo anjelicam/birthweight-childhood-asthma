@@ -1,0 +1,5 @@
+"0",""
+"0","# Check the categories are working correctly"
+"0","df |>"
+"0","  group_by(age_cats) |>"
+"0","  summarise(min = min(age), max = max(age), n = n())"

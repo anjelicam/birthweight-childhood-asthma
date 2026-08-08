@@ -1,0 +1,999 @@
+---
+title: "Among U.S. children aged 0–17, is low birth weight associated with increased odds of an ever asthma diagnosis, after adjusting for child age, sex, race/ethnicity, household income, and secondhand smoke exposure?"
+author:
+  - name: Javier Diaz Collante
+    email: jdiazcollant@umass.edu
+  - name: Rachel Huselid,
+    email: rhuselid@schoolph.umass.edu,
+  - name: Anjelica Martinez
+    email: anjelicamart@umass.edu
+    affiliation: Department of Biostatistics & Epidemiology
+  - name: "Created on: June 28, 2026"
+author-title: "Author"
+affiliation-title: "University of Massachusetts - Amherst"
+abstract-title: Purpose
+abstract: This notebook is for the analysis portion of our EPI 690A final project.
+published-title: "Date Updated"
+format:
+  html:
+    embed-resources: true
+    anchor-sections: true
+    code-fold: show
+    code-tools: true
+    fig-width: 6
+    fig-height: 4
+    code-block-bg: "#f1f3f5"
+    code-block-border-left: "#31BAE9"
+    mainfont: Source Sans Pro
+    theme: journal
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    captions: true
+    table-captions: true
+---
+
+# Introduction
+
+Asthma is one of the most common chronic diseases of childhood in the United States and is a leading cause of emergency department visits, hospitalizations, missed school days, and reduced quality of life in children. Although genetic predisposition contributes to asthma risk, early-life factors have also been recognized as important determinants of many chronic diseases. Low birth weight, often resulting from preterm birth or other factors, has been associated with underdeveloped lung development and increased susceptibility to respiratory disease later in childhood. However, because childhood asthma is also influenced by demographic, socioeconomic, and environmental factors, it is important to evaluate whether the relationship between low birth weight and asthma persists after accounting for these potential confounders.
+
+Using data from the 2023 [National Survey of Children's Health (NSCH)](https://mchb.hrsa.gov/data-research/national-survey-childrens-health) a nationally representative cross-sectional survey of U.S. children aged 0–17 years, this project will examine whether low birth weight is associated with the likelihood of ever receiving an asthma diagnosis. Specifically, the research question is: among U.S. children aged 0–17 years, is low birth weight associated with increased odds of ever having an asthma diagnosis after adjusting for age, sex, race, household income, and secondhand smoke exposure? We hypothesize that children with a history of low birth weight will have a higher likelihood of ever being diagnosed with asthma compared with children of normal birth weight, even after controlling for these possible confounders.
+
+# Methods
+
+## Study population
+
+The [2023 National Survey of Children's Health (NSCH)](www2.census.gov/programs-surveys/nsch/technical-documentation/methodology/2023-NSCH-Methodology-Report.pdf) survey population focused on non-institutionalized children in the United States ages 0–17. The sample size nationally was 55,162 children, and the state sample size ranged from 710 to 4,696 children. Participants were randomly sampled by household and contacted by mail directly to determine whether the household had one or more children under the age of 18. If the household was determined to have more than one child, one child was chosen at random to be the subject of the survey. Children with special health care needs and children between the ages of 0 and 5 were oversampled in the survey. A total of nine states and one metropolitan area (California, Colorado, Nebraska, New York, Ohio, Oregon, Pennsylvania, Tennessee, Wisconsin, and Atlanta, Georgia) provided oversampling funding to support additional interviews and allow reporting for specific population groups, conditions, or localities in these locations. The survey data were weighted to represent the population of non-institutionalized children between the ages of 0 and 17 both nationally and by state. The overall weighted response rate of the survey was 35.8%.
+
+The survey data were collected via online forms or a physical paper version. Each household was mailed an invitation in which the adult of the house familiar with the child's health and health care was asked to complete a short screener questionnaire (via web or paper). The questionnaire asked participants to identify whether there were children in the household between the ages of 0 and 17 and to report their ages. If a child was in the home and the participant wished to complete the survey online, they were directed to a link with more detailed age-specific questions for the one randomly selected child. The survey was provided in both English and Spanish. Participants also had the option to use telephone assistance.
+
+## Exposure
+
+The primary exposure was birth weight status, defined using the variable `BIRTHWT_L`, which classifies children as having low birth weight (less than 2,500 grams) or normal birth weight. Low birth weight was treated as a binary variable, with normal birth weight as the reference group. This variable is provided as a pre-derived field in the NSCH public use file and required no additional recoding. 
+
+## Outcome
+
+The primary outcome was ever having received an asthma diagnosis, defined using the variable `K2Q40A`, which asks whether a doctor or other health care provider has ever told the respondent that the child has asthma. This was treated as a binary outcome, with children never diagnosed with asthma serving as the reference group. We initially considered distinguishing children with current versus previous asthma diagnoses using the companion variable `K2Q40B`, but ultimately used the single binary ever asthma variable for all descriptive and modeling purposes, since it captures any lifetime occurrence of the diagnosis and avoids ambiguity in how to classify children whose asthma has resolved.
+
+## Covariates
+
+Covariates were selected based on their established or plausible relationship to both birth weight and childhood asthma risk, and on the completeness of their measurement across the full 0 to 17 age range. The fully adjusted model included child age, sex, race, preterm birth status, familial poverty ratio, highest level of parental education, and insurance type. Age was included in the overall adjusted model but was excluded from the covariate set in age stratified analyses, since age itself defines the stratification.
+
+Secondhand smoke exposure, vaping exposure inside the home, and allergy history were described in the study population but were not included in the adjusted model. These variables were treated separately because our adjustment strategy prioritized demographic and socioeconomic covariates with minimal missingness, and because including additional covariates would have further reduced the analytic sample available for the fully adjusted model. Body mass index category was considered but excluded from all models, since this measure is only collected for children ages 6 to 17 and is therefore missing for the majority of younger children in the sample. In addition, because body mass index is measured cross sectionally at the time of the survey, it cannot be used to establish whether excess weight preceded or followed an asthma diagnosis.
+
+## Statistical Methods
+
+Within this population, our analytic sample was further restricted to children with non-missing responses for the primary exposure and outcome variables, since these two variables define the research question. A flow diagram will report the sample size at each stage of this restriction, from the total NSCH respondent pool through the final analytic sample, along with the number of children excluded at each step. Missing covariate data was not used to exclude children from the overall analytic sample or from unadjusted analyses; rather, covariate missingness was allowed to reduce the sample size only within models that included the affected covariate. 
+
+We retained the full pediatric age range of 0 to 17 years for our primary analysis, since restricting the sample by age would have limited the birth weight information available for the youngest children, who are closest in time to their birth history. However, because asthma diagnoses accumulate over childhood and younger children have had less opportunity to be diagnosed, we conducted a parallel analysis stratified by age group to evaluate whether the association between birth weight and asthma differed across developmental stages.
+
+Descriptive statistics were generated for the exposure, outcome, and all covariates, stratified by asthma status, with means and standard deviations reported for continuous variables and frequencies and percentages reported for categorical variables. Bivariate comparisons between birth weight status and childhood characteristics were assessed using chi-square tests for categorical variables.
+
+The association between birth weight status and ever having an asthma diagnosis was estimated using logistic regression, and results are presented as both prevalence differences and odds ratios with accompanying 95% confidence intervals, since absolute and relative measures each provide distinct and clinically relevant information. Prevalence differences were estimated as average marginal effects, averaging the difference in predicted asthma probability across all observations in the sample. We used this approach rather than evaluating the contrast at a single representative covariate profile, which yields wider standard errors and is more sensitive to the choice of profile values. Models were built in a staged sequence to account for the effect of missing covariate data on sample size. The first model was unadjusted. The second model adjusted for child age alone, since age was fully observed and allowed us to assess confounding by age before introducing covariates with missing values. The third model was fully adjusted for sex, race, preterm birth, familial poverty ratio, parental education, household smoker status, and insurance type. The analytic sample size is reported for each stage of this sequence.
+
+Finally, the fully adjusted model was repeated separately within four age strata, infants and toddlers (0 to 2 years), preschool age (3 to 5 years), middle childhood (6 to 12 years), and adolescents (13 to 17 years), to evaluate whether the association between birth weight and asthma diagnosis was consistent across childhood or concentrated within a particular developmental period.
+
+------------------------------------------------------------------------
+
+# Codebook
+
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+|                        |                             |                                                            |                                                                                                          |
++========================+=============================+============================================================+==========================================================================================================+
+| **New Variable**       | **Original Variable**       | **Label**                                                  | **Values**                                                                                               |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `age`                  | `SC_AGE_YEARS`              | Age of selected child (years)                              |                                                                                                          |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `sex`                  | `SC_SEX`                    | Sex of selected child                                      | 1 = Male\                                                                                                |
+|                        |                             |                                                            | 2 = Female                                                                                               |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `race`                 | `SC_RACE_R`                 | Race of selected child                                     | 1 = White alone\                                                                                         |
+|                        |                             |                                                            | 2 = Black or African American alone\                                                                     |
+|                        |                             |                                                            | 3 = American Indian or Alaska Native alone\                                                              |
+|                        |                             |                                                            | 4 = Asian alone\                                                                                         |
+|                        |                             |                                                            | 5 = Native Hawaiian and Other Pacific Islander alone\                                                    |
+|                        |                             |                                                            | 7 = Two or More Races                                                                                    |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `hispanic`             | `SC_HISPANIC_R`             | Hispanic or Latino origin of selected child                | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `birth_weight_status`  | `BIRTHWT`                   | Birth weight status                                        | 1 = Very low birth weight (less than 1,500g)\                                                            |
+|                        |                             |                                                            | 2 = Low birth weight (less than 2,500g)\                                                                 |
+|                        |                             |                                                            | 3 = Not low birth weight                                                                                 |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `birth_weight_ver_low` | `BIRTHWT_VL`                | Birth weight is very low (\<1500g)                         | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `birth_weight_low`     | `BIRTHWT_L`                 | Birth weight is low (\<2500g)                              | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `asthma`               | `K2Q40A`                    | Ever diagnosed with asthma                                 | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `born_early`           | `K2Q05`                     | Born 3 or more weeks before due date                       | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `poverty`              | `FPL_I1`                    | Family poverty ratio, first implicate                      | 50 or less - 400 or more                                                                                 |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `education`            | `HIGRADE_TVIS`              | Highest level of education among reported adults, Detailed | 1 = Less than high school\                                                                               |
+|                        |                             |                                                            | 2 = High school (including vocational, trade, or business school)\                                       |
+|                        |                             |                                                            | 3 = Some college or Associate Degree\                                                                    |
+|                        |                             |                                                            | 4 = College degree or higher                                                                             |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `insurance_type`       | `INSTYPE`                   | Insurance type                                             | 1 = Public only (government assistance)\                                                                 |
+|                        |                             |                                                            | 2 = Private only (privately purchased, including through ACA marketplace, through employer, or TRICARE)\ |
+|                        |                             |                                                            | 3 = Private and public\                                                                                  |
+|                        |                             |                                                            | 5 = Not insured                                                                                          |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `cigarettes`           | `K9Q40`                     | Anyone in household use cigarettes                         | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `vape`                 | `VAPE`                      | Vape/E-Cigarettes inside of home                           | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `allergies`            | `ALLERGIES`                 | Ever diagnosed with allergies                              | 1 = Yes\                                                                                                 |
+|                        |                             |                                                            | 2 = No                                                                                                   |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| `age_cats`\*           | Created from `age` variable | Age group                                                  | Infants/Toddlers (0-2)\                                                                                  |
+|                        |                             |                                                            | Preschool (3-5)\                                                                                         |
+|                        |                             |                                                            | Middle childhood (6-12)\                                                                                 |
+|                        |                             |                                                            | Teenagers (13-17)                                                                                        |
++------------------------+-----------------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+
+~Codebook provided by the 2023 National Survey of Children's Health (NSCH)~\
+~\*This variable were created in 01_epi690a_final_project_DM.qmd~
+
+------------------------------------------------------------------------
+
+# Setup
+
+Load relevant packages and setup code to help with HTML rendering.
+
+```{r}
+#| label: load packages
+#| code-summary: "Packages"
+
+# Packages Used
+pacman::p_load(
+    dplyr,          # data manipulation
+    forcats,        # tools for working with categorical variables
+    here,           # file paths relative to R project root folder
+    rio,            # import/export of many types of data 
+    tidyverse,      # includes many packages for tidy data wrangling 
+    Hmisc,          # includes many functions in Harrellverse 
+    data.table,     # (alternative) faster than tidyverse
+    qreport,        # useful for formatting in quarto
+    sparkline,      # inline interactive plots
+    lubridate,      # simplifies working with dates
+    janitor,        # tables and data cleaning
+    skimr,          # summary statistics
+    gtsummary,      # making descriptive and statistical tables
+    rstatix,        # quickly run statistical tests and summaries
+    labelled,       # labels variables
+    naniar,         # assessing missing data
+    datadictionary, # creates data dictionaries
+    haven,          # read/handle labelled data (e.g. SPSS/Stata/SAS files)
+    marginaleffects, # predictions, comparisons, and hypothesis tests
+    modelsummary,
+    broom,
+    stringr,
+    gt,
+    tibble
+ )
+ 
+```
+
+```{r}
+#| label: setup
+#| code-summary: "Setup"
+
+# Source: Frank Harrell https://hbiostat.org/rflow/ 
+# Make base graphics look better:
+spar <- function(bot=0, left=0, top=0, rt=0)
+  par(mar=c(3.25 + bot, 5 + left, 0.5 + top, 0.5 * rt),
+      lwd=1.75, mgp=c(2.0, 0.475, 0), tcl=-0.4, xpd=FALSE, ps=14,
+      cex.lab=1.15, cex.axis=0.8)
+
+# Set abbreviations for chunk option names
+knitr::set_alias(w = 'fig.width', h = 'fig.height')
+
+options(prType='html')   # for certain Hmisc and rms functions
+
+# To automatically sense which output format is being created and 
+# create a character string that will work for both `html` and `LaTeX`.  
+# For `LaTeX`, a boxed note in the body of the document will appear.
+
+ishtml <- knitr::is_html_output()
+mNote  <- if(ishtml) '.column-margin' else '.callout-note appearance="minimal"'
+
+#FHarrell: "Note that to initialize javascript jQuery dependencies 
+# we must include sparkline::sparkline(0) somewhere in the report 
+# before creating the first sparkline output."
+sparkline::sparkline(0)
+```
+
+# Load Data
+
+Data was collected from the canvas website and originally created by the National Survey of Children's Health (NSCH). The data were cleaned and prepared in the data management notebook `01_epi690a_final_project_DM.qmd` (and the resulting processed dataset `nsch2023_processed.rdata` is loaded below.
+
+```{r}
+#| label: load data
+#| code-summary: "Load Data"
+
+# Import data
+df <- import(here("data", "processed", "nsch2023_processed.rdata"))
+
+# Review data structure
+head(df)
+```
+
+```{r}
+# View a data dictionary of df (variable types, levels, and labels)
+contents(df)
+```
+
+# Descriptive Statistics
+
+To start, we created Table 1, which summarizes the characteristics of the participants by birth weight status. For each variable we report frequencies and percentages for categorical measures and means, medians, and ranges for continuous measures, allowing us to describe the sample and compare demographic, socioeconomic, and health characteristics across normal, low, and very low birth weight groups before conducting any formal analysis.
+
+## Table 1: Characteristics by Low Birth Weight Status
+
+```{r}
+#| label: descriptives table
+#| message: false
+#| warning: false
+#| code-summary: Table 1
+
+# Creates a descriptive statistics table
+tbl_summary(
+  df,
+  include = c(age, age_cats, sex, race, hispanic, born_early, poverty, 
+              education, insurance_type, asthma, cigarettes, vape, allergies),
+  type = all_continuous() ~ "continuous2",
+  statistic = all_continuous() ~ c("{mean} ({sd})", 
+                                   "{median} ({p25}-{p75})", 
+                                   "{min}-{max}"),
+  percent = "column",
+  by = birth_weight_low,               
+  missing = "always",        
+  missing_text = "Missing", 
+  missing_stat = "{N_miss} ({p_miss}%)"
+) |>
+  add_overall() |> 
+  add_n() |>                 
+  modify_header(label = "**Participant Characteristics**") |>
+  modify_caption("**Table 1: Characteristics by low birth weight Status**") |>
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Low Birth Weight**") |>
+  add_variable_group_header(
+    header = "Environmental Exposures",
+    variables = c(cigarettes, vape, allergies)
+  ) |>
+  modify_bold(
+    columns = label,
+    rows = (row_type == "label" & !variable %in% c("cigarettes", "vape", "allergies")) |
+      label == "Environmental Exposures"
+  )
+```
+
+## Age Distribution of Selected Children Across Households
+
+The next thing we made was a histogram of the age distribution of the selected children across households. This showed how the sample was spread across the full 0–17 age range, with a notable peak among the youngest children (ages 0–2), reflecting the survey's oversampling of children aged 0–5. The remaining ages were fairly evenly represented, confirming that our analytic sample included children from across the pediatric age range rather than being concentrated in any single developmental stage.
+
+```{r}
+#| label: age histogram
+#| code-summary: "Children's Age Histogram"
+
+# Histogram of Age
+ggplot(df, aes(x = age)) +
+  geom_histogram(bins = 15, fill = "lightblue", color = "white") +
+  labs(title = "Age Distribution of Selected Children Across Households", 
+       x = "Age (Years)", 
+       y = "Number of children",
+       caption = "Data from 2023 National Survey of Children's Health (NSCH)") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11,
+                              face = "bold",
+                              margin = margin(b = 15),
+                              hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10), size = 9),
+    axis.title.y = element_text(margin = margin(r = 10), size = 9),
+    plot.caption = element_text(
+      size = 8,
+      color = "darkgray",
+      margin = margin(t = 15, b = 10, unit = "pt")
+    ))
+```
+
+## Distribution of Age by Age Group
+
+To confirm that our age categories behaved as intended, we created a boxplot showing the distribution of age within each of the four age groups. Each group spanned its expected range with no overlap between them, verifying that children were correctly partitioned into infants and toddlers (0–2), preschool (3–5), middle childhood (6–12), and adolescents (13–17). This grouping formed the basis for our later age-stratified analysis.
+
+```{r}
+# Boxplot of age within group
+
+ggplot(df, aes(x = age_cats, y = age)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Age by Age Group",
+       x = "Age Groups",
+       y = "Age (Years)",
+       caption = "Data from 2023 National Survey of Children's Health (NSCH)") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 10, color = "gray30", hjust = 0.5),
+    axis.text = element_text(size = 9),
+    axis.title.x = element_text(size = 9),
+    axis.title.y = element_text(size = 9),
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 9),
+    legend.position = "none",
+    plot.caption = element_text(size = 8, color = "darkgray")
+  )
+```
+
+## Asthma Prevalence by Birth Weight and Age
+
+Next, we created a bar chart to see how crude asthma prevalence differed by birth weight status across the four age groups. According to the bar chart, within every age group, low-birth-weight children had a higher prevalence of ever being diagnosed with asthma than normal-birth-weight children, ranging from 5.3% versus 2.3% among infants/toddlers (0-2 years old) to 19.7% versus 14.3% among teenagers (13-17 years old). Prevalence also rose steadily with age in both groups, consistent with asthma diagnoses accumulating over childhood. This descriptive pattern set up our regression analysis, which tested whether the birth-weight gap persisted after adjusting for demographic and socioeconomic factors.
+
+```{r}
+df |>
+  filter(!is.na(birth_weight_low), !is.na(asthma), !is.na(age_cats)) |>
+  group_by(age_cats, birth_weight_low) |>
+  summarise(pct = 100 * mean(asthma == "Yes"), .groups = "drop") |>
+  ggplot(aes(x = age_cats, y = pct, fill = birth_weight_low)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+  geom_text(aes(label = paste0(round(pct, 1), "%")),
+            position = position_dodge(width = 0.8),
+            vjust = -0.4, size = 3) +
+  scale_fill_manual(values = c("No" = "steelblue", "Yes" = "lightblue"),
+                    labels = c("Normal", "Low birth weight")) +
+  labs(title = "Asthma Prevalence by Birth Weight and Age Group",
+       subtitle = "Low-birth-weight children have higher prevalence at every age",
+       x = NULL, y = "% ever diagnosed with asthma", fill = "Birth weight",
+       caption = "Data from 2023 National Survey of Children's Health (NSCH)") +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 10, color = "gray30", hjust = 0.5),
+    axis.text = element_text(size = 9),
+    axis.title.y = element_text(size = 9),
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 9),
+    legend.position = "top",
+    plot.caption = element_text(size = 8, color = "darkgray")
+  )
+```
+
+------------------------------------------------------------------------
+
+# Table 2: Unadjusted and adjusted association between low birth weight and ever having an asthma diagnosis
+
+To formally test the association between low birth weight and asthma, we fit a staged sequence of logistic regression models, presented in Table 2. The first model was unadjusted, the second adjusted for child age, and the third adjusted for the full set of covariates (sex, race, preterm birth, familial poverty ratio, parental education, insurance type, and household smoker status). For each model we report both the odds ratio and the absolute prevalence difference with 95% confidence intervals, since the two measures convey complementary information about the relative and absolute magnitude of the association.
+
+Low birth weight was significantly associated with ever having an asthma diagnosis across all three models. The unadjusted odds ratio was 1.67 (95% CI 1.52–1.82) and was essentially unchanged after adjusting for age (OR 1.67, 95% CI 1.53–1.83), indicating that age did not confound the relationship. After full adjustment, the association attenuated to an odds ratio of 1.21 (95% CI 1.08–1.35) but remained statistically significant, indicating that much of the crude association was explained by demographic and socioeconomic factors while an independent association persisted; this pattern of attenuation across the three models is shown graphically in @fig-forest-models in the appendix. On the absolute scale, low-birth-weight children had roughly a 5 percentage-point higher probability of asthma than normal-birth-weight children.
+
+```{r}
+tbl <- tribble(
+  ~birth_weight,         ~events,       ~unadj_pd,          ~unadj_or,          ~age_pd,            ~age_or,            ~all_pd,            ~all_or,
+  "Normal birth weight", "4,358 (9.1)", "Reference",        "1.00",             "Reference",        "1.00",             "Reference",        "1.00",
+  "Low birth weight",    "661 (14.3)",  "5.2 (4.1 to 6.2)", "1.67 (1.52–1.82)", "5.1 (4.1 to 6.1)", "1.67 (1.53–1.83)", "1.68 (0.66–2.71)", "1.21 (1.08–1.35)",
+  "Missing",             "190 (8.7)",   "",                 "",                 "",                 "",                 "",                 ""
+)
+
+tbl |>
+  gt(rowname_col = "birth_weight") |>
+  # Row-group label that spans the exposure rows
+  tab_row_group(
+    label = md("**Exposure = birth weight category**"),
+    rows  = everything()
+  ) |>
+  # Top-level spanning headers
+  tab_spanner(label = "Events, N=52,935",           columns = events) |>
+  tab_spanner(label = "Unadjusted, N=52,532",        columns = c(unadj_pd, unadj_or)) |>
+  tab_spanner(label = "Adjusted for age, N=52,532",  columns = c(age_pd, age_or)) |>
+  tab_spanner(label = "Adjusted for all variables,* N=50,580",
+              id = "all_var", columns = c(all_pd, all_or)) |>
+  # Sub-column labels
+  cols_label(
+    events   = "",
+    unadj_pd = "Prevalence difference % (95% CI)",
+    unadj_or = "Odds ratio (95% CI)",
+    age_pd   = "Prevalence difference % (95% CI)",
+    age_or   = "Odds ratio (95% CI)",
+    all_pd   = "Prevalence difference % (95% CI)",
+    all_or   = "Odds ratio (95% CI)"
+  ) |>
+  cols_align(align = "center", columns = -birth_weight) |>
+  # The asterisk footnote
+  tab_footnote(
+    footnote  = "Abbreviations, CI = Confidence interval",
+    locations = cells_column_spanners(spanners = "all_var")
+  ) |>
+  tab_footnote(
+    footnote  = "Unadjusted and adjusted results were estimated using logistic regression",
+    locations = cells_stub(rows = birth_weight == "Low birth weight")
+  ) |>
+  tab_footnote(
+    footnote  = "Adjusted for age, sex, race, preterm birth, familial poverty ratio, education level of adults, insurance type, andhousehold smoker status",
+    locations = cells_stub(rows = birth_weight == "Low birth weight")
+  )
+
+```
+
+## Logistic Regression
+
+Having summarized the results in Table 2, we present the full logistic regression models below. Each model is shown in a staged sequence (unadjusted, age-adjusted, and fully adjusted) with the complete model output and the odds ratios and confidence intervals for every term.
+
+We used logistic regression because our outcome, ever having an asthma diagnosis, is binary. To separate the effect of low birth weight from the influence of other factors, we built the models in a staged sequence rather than fitting a single model. The first model was unadjusted, estimating the crude association between low birth weight and asthma. The second added child age alone, since age was fully observed and allowed us to check whether it confounded the relationship before introducing covariates with missing data. The third model was fully adjusted for sex, race, preterm birth, familial poverty ratio, parental education, insurance type, and household smoker status. Building the models in stages let us see how the association changed as covariates were added and to account for the effect of missing covariate data on the sample size at each step.
+
+### Model 1: Unadjusted
+
+```{r}
+# Relevel binary variables so "No" is the reference category
+# This makes every odds ratio read in the intuitive direction (exposed vs. unexposed).
+
+df$birth_weight_low <- relevel(df$birth_weight_low, ref = "No")  # OR = low vs normal birth weight
+df$born_early       <- relevel(df$born_early, ref = "No")        # OR = preterm vs full-term
+df$asthma           <- relevel(df$asthma, ref = "No")            # model P(asthma = Yes)
+df$cigarettes       <- relevel(df$cigarettes, ref = "No")        # OR = smoker vs non-smoker household
+```
+
+```{r}
+# Model 1: unadjusted asthma on low birth weight
+model1 <- glm(asthma ~ birth_weight_low, data = df, family = binomial)
+
+# full model output (coefficients, SEs, fit stats)
+summary(model1)
+
+# odds ratio + 95% CI
+tidy(model1, exponentiate = TRUE, conf.int = TRUE)
+```
+
+***Interpretation:***
+
+- *Model 1 is unadjusted and shows a significant association between birth weight status and asthma (OR = 1.67, 95% CI: 1.52–1.82, p \< 0.001).*
+- *The reference level is normal birth weight, so this OR compares low-birth-weight children to normal-birth-weight children.*
+- *Interpretation: low-birth-weight children had about 1.67× the odds of an asthma diagnosis compared to normal-birth-weight children.*
+- *This is consistent with the crude prevalences (14.3% asthma among low-birth-weight children vs 9.1% among normal-birth-weight children) and with the study hypothesis.*
+
+### Model 2: Adjusted for Age
+
+```{r}
+# Model 2: asthma on low birth weight, age-adjusted
+model2 <- glm(asthma ~ birth_weight_low + age, data = df, family = binomial)
+
+# full model output (coefficients, SEs, fit stats)
+summary(model2)
+
+# odds ratios + 95% CIs for every term
+tidy(model2, exponentiate = TRUE, conf.int = TRUE)
+```
+
+**Interpretation:**
+
+- *Model 2 adds age as a covariate. After adjusting for age, the birth weight association is essentially unchanged: OR = 1.67 (95% CI: 1.53–1.83, p \< 0.001), nearly identical to Model 1.*
+- *Low-birth-weight children had about 1.67× the odds of an asthma diagnosis compared to normal-birth-weight children.*
+- *Age is significant: OR = 1.10 per year (95% CI: 1.09–1.11, p \< 0.001), so each additional year is associated with about 10% higher odds of an ever asthma diagnosis.*
+- *Because the birth weight OR is stable after adjusting for age, age is not confounding the birth weight–asthma relationship.*
+
+### Model 3: Adjusted for age, sex, race, preterm birth, familial poverty ratio, education level of adults, insurance type, and household smoker status
+
+```{r}
+# Model 3: fully adjusted logistic regression of asthma
+model3 <- glm(asthma ~ birth_weight_low + age + sex + race + born_early 
+              + poverty + education + insurance_type + cigarettes, 
+              data = df, family = binomial) 
+
+# full model output (coefficients, SEs, fit stats)
+summary(model3)
+
+# odds ratios + 95% CIs for every term
+tidy(model3, exponentiate = TRUE, conf.int = TRUE)
+```
+
+**Interpretation**
+
+***Main finding — birth weight (fully adjusted):***
+
+- *After full adjustment, the association attenuates from 1.67 to OR = 1.21 (95% CI 1.08–1.35, p \< 0.001) but remains significant.*
+
+- *Low-birth-weight children have \~1.21× the odds of asthma vs normal-birth-weight children.*
+
+- *The drop from 1.67 → 1.21 means much of the crude association is explained by the other covariates, but an independent association persists.*
+
+***Other significant predictors (CI excludes 1):***
+
+- *Age: OR = 1.10/year — \~10% higher odds per additional year of age.*
+
+- *Sex (Female): OR = 0.70 — girls have lower odds than boys.*
+
+- *Race (vs White): Black = 1.87 (higher); Asian = 0.82 (lower); Two or more races = 1.39 (higher).*
+
+- *Preterm birth (Yes): OR = 1.62 — premature children have higher odds.*
+
+- *Education (Some college): OR = 1.31 (higher vs reference).*
+
+- *Insurance (vs Public): Private = 0.74 (lower); Private and Public = 1.19 (higher); Not insured = 0.65 (lower).*
+
+- *Household smoker (Yes): OR = 1.10 (95% CI 1.00–1.21, p = 0.05) — \~10% higher odds, but right at the significance threshold.*
+
+***Not significant (CI crosses 1):***
+
+- *Poverty (\~1.00), American Indian/Alaska Native, Native Hawaiian/Pacific Islander, and High school and College-degree education.*
+
+### Model 3 Visualizations
+
+To make the model results easier to interpret, we created several visualizations. First, a predicted-probability plot shows how the estimated probability of an asthma diagnosis changes across age for low- versus normal-birth-weight children, translating the model's odds ratios onto the more intuitive probability scale. Second, a coefficient plot displays the adjusted odds ratios for every predictor in the fully adjusted model on a single axis, allowing quick comparison of which factors raise or lower the odds of asthma and which are statistically significant. Together, these plots summarize the fully adjusted model both in terms of its central finding (the birth-weight effect across age) and its full set of covariates.
+
+#### Predicted Probabilities Plot
+
+```{r}
+# Predicted asthma probability by age and birth weight (Model 3)
+plot_predictions(model3, condition = c("age", "birth_weight_low")) +
+  scale_color_discrete(labels = c("Normal", "Low birth weight")) +
+  scale_fill_discrete(labels = c("Normal", "Low birth weight")) +
+  labs(title = "Predicted Asthma Probability by Age and Birth Weight",
+       subtitle = "Low-birth-weight children have higher predicted probability at every age",
+       x = "Age (Years)", y = "Predicted probability of asthma",
+       color = "Birth weight", fill = "Birth weight",
+       caption = "Adjusted model (Model 3). Data from 2023 NSCH") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold",
+                              hjust = 0.5),
+    plot.subtitle = element_text(size = 10, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10), size = 10),
+    axis.title.y = element_text(margin = margin(r = 10), size = 10),
+    plot.caption = element_text(
+      size = 9,
+      color = "darkgray",
+      margin = margin(t = 15, b = 10, unit = "pt")
+    ))
+```
+
+***Interpretation:***
+
+- *Predicted asthma probability rises steadily with age in both groups, from about 4–5% at birth to 16–19% by age 17 — consistent with the age odds ratio of 1.10 (asthma diagnoses accumulate as children get older).*
+
+- *Low-birth-weight children (blue) sit above normal-birth-weight children (red) at every age, showing the adjusted birth-weight effect (OR = 1.21) holds across all of childhood.*
+
+- *The gap between the two curves widens in absolute terms at older ages — expected on the probability scale, since a constant odds ratio produces a larger percentage-point difference when the baseline probability is higher.*
+
+- *The confidence bands overlap modestly, reflecting that the adjusted birth-weight association, while significant, is smaller than the crude one.*
+
+#### Coefficient Plot
+
+```{r}
+#| message: false
+#| warning: false
+
+labels <- c(
+  "birth_weight_lowYes" = "Low birth weight",
+  "age" = "Age (per year)",
+  "sexFemale" = "Female",
+  "raceBlack or African American" = "Black",
+  "raceAmerican Indian or Alaska Native" = "American Indian/Alaska Native",
+  "raceAsian" = "Asian",
+  "raceNative Hawaiian and other Pacific Islander" = "Native Hawaiian/Pacific Islander",
+  "raceTwo or more races" = "Two or more races",
+  "born_earlyYes" = "Preterm birth",
+  "poverty" = "Poverty ratio",
+  "educationHigh school" = "High school",
+  "educationSome college" = "Some college",
+  "educationCollege degree or higher" = "College degree or higher",
+  "insurance_typePrivate" = "Private insurance",
+  "insurance_typePrivate and Public" = "Private and public insurance",
+  "insurance_typeNot insured" = "Not insured",
+  "cigarettesYes" = "Household smoker"
+)
+
+modelplot(model3, coef_map = rev(labels), exponentiate = TRUE) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  labs(title = "Adjusted Odds Ratios for Ever Asthma Diagnosis (Model 3)",
+       subtitle = "Reference line at OR = 1; intervals crossing it are not significant",
+       x = "Odds ratio (95% CI)", y = NULL,
+       caption = "Model 3 (fully adjusted). Data from 2023 NSCH") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 9, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10), size = 9),
+    plot.caption = element_text(size = 8, color = "darkgray",
+                                margin = margin(t = 15, b = 10, unit = "pt"))
+  )
+```
+
+**Interpretation**
+
+- *Each point is a covariate's adjusted odds ratio from Model 3, with its 95% CI; the dashed line at OR = 1 marks no association, and intervals crossing it are not statistically significant.*
+
+- ***Higher asthma odds (right of 1, CI excludes 1):** Black race shows the largest increase (OR \~1.87), followed by preterm birth (\~1.62), two or more races (\~1.39), some college (\~1.31), private and public insurance (\~1.19), low birth weight (\~1.21), and age (\~1.10 per year).*
+
+- ***Lower asthma odds (left of 1, CI excludes 1):** female sex (\~0.70), Asian race (\~0.82), private insurance (\~0.74), and not insured (\~0.65).*
+
+- ***On the significance boundary:** household smoker (\~1.10) sits just right of 1 with its CI lower bound touching 1 — a borderline positive association.*
+
+- ***No significant association (CI crosses 1):** poverty ratio (\~1.00), American Indian/Alaska Native, Native Hawaiian/Pacific Islander, high school, and college degree or higher.*
+
+- *Overall, the strongest independent predictors of asthma in the fully adjusted model are Black race and preterm birth, while low birth weight — the exposure of interest — remains modestly but significantly associated after accounting for all covariates.*
+
+------------------------------------------------------------------------
+
+## Odds Ratios
+
+To compare the birth-weight association directly across the three models, we extracted the odds ratio and 95% confidence interval for low birth weight from each one and reported them alongside each model's sample size. Isolating this single term across the unadjusted, age-adjusted, and fully adjusted models lets us see how the estimate changed as covariates were added, while the sample sizes show how covariate missingness reduced the analytic sample at the fully adjusted stage.
+
+We then created a forest plot of the fully adjusted model, displaying the adjusted odds ratio and confidence interval for every predictor on a single axis. Plotting all covariates together, with a reference line at an odds ratio of 1, makes it easy to see which factors were associated with higher or lower odds of asthma and which were statistically significant.
+
+```{r}
+overall <- bind_rows(
+  tidy(model1, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Unadjusted"),
+  tidy(model2, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Age-adjusted"),
+  tidy(model3, exponentiate = TRUE, conf.int = TRUE) |> mutate(model = "Fully adjusted")
+) |>
+  filter(str_detect(term, "birth_weight_low")) |>
+  mutate(model = factor(model, levels = c("Fully adjusted", "Age-adjusted", "Unadjusted")))
+
+ggplot(overall, aes(x = estimate, y = model)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+  labs(title = "Low Birth Weight and Asthma Odds Across Models",
+       subtitle = "Association attenuates with adjustment but remains significant",
+       x = "Odds ratio (95% CI)", y = NULL,
+       caption = "Data from 2023 National Survey of Children's Health (NSCH)") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11,
+                              face = "bold",
+                              hjust = 0.5),
+    plot.subtitle = element_text(size = 10, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10), size = 9),
+    axis.title.y = element_text(margin = margin(r = 10), size = 9),
+    plot.caption = element_text(
+      size = 8,
+      color = "darkgray",
+      margin = margin(t = 15, b = 10, unit = "pt")
+    ))
+```
+
+```{r}
+# Model 1: odds ratio + CI for low birth weight
+tidy(model1, exponentiate = TRUE, conf.int = TRUE) |> 
+  filter(str_detect(term, "birth_weight_low")) 
+
+# Model 2: same, age-adjusted
+tidy(model2, exponentiate = TRUE, conf.int = TRUE) |> 
+  filter(str_detect(term, "birth_weight_low")) 
+
+# Model 3: same, fully adjusted
+tidy(model3, exponentiate = TRUE, conf.int = TRUE) |> 
+  filter(str_detect(term, "birth_weight_low")) 
+
+# sample size for each model
+nobs(model1)
+nobs(model2)
+nobs(model3)
+
+```
+
+***Interpretation***
+
+- *The birth weight–asthma association is significant in all three models and consistent in direction (reference = low birth weight, so not-low-birth-weight children have higher odds).*
+
+- *Adjusting for age alone changes nothing (1.67 → 1.67) — age is not a confounder.*
+
+- *Full adjustment attenuates the OR from 1.67 to 1.21, so demographic and socioeconomic covariates explain a substantial part of the crude association, though a significant independent association remains.*
+
+- *One caveat to note: Model 3 dropped \~1,952 observations (52,532 → 50,580) due to missing data on the added covariates, so it isn't fit on quite the same sample as Models 1–2. The comparison is still valid but not strictly apples-to-apples.*
+
+------------------------------------------------------------------------
+
+## Prevalence Difference % (95% CI)
+
+Because odds ratios describe the association on a relative scale, we also estimated the absolute difference in asthma probability between low- and normal-birth-weight children. We first computed this contrast using predicted probabilities from `predictions()` and a hypothesis test, which evaluates the difference at a single representative covariate profile. We then computed it as an average marginal effect using `avg_comparisons()`, which averages the difference in predicted probability across all children in the sample using their actual covariate values. Because the average marginal effect reflects the true covariate distribution of the sample and provides a more precise population-level estimate, we report the `avg_comparisons()` results in Table 2. Reporting the prevalence difference alongside the odds ratio conveys the absolute public-health impact of low birth weight, which the odds ratio alone does not capture.
+
+```{r}
+ 
+# Model 1: Unadjusted ===============================================
+# predicted asthma probability, No vs Yes
+pred_model1 <- predictions(model1, 
+                           newdata = datagrid(
+                             birth_weight_low = c("No", "Yes")))
+
+# Checks if the two predictions differ
+hypotheses(pred_model1, hypothesis = "b2 = b1")
+
+# Model 2: Age-adjusted =============================================
+# same predictions, now controlling for age
+pred_model2 <- predictions(model2, 
+                           newdata = datagrid(
+                             birth_weight_low = c("No", "Yes")))
+
+# Checks if the two predictions differ
+hypotheses(pred_model2, hypothesis = "b2 = b1")
+
+# Model 3: Fully adjusted (multiple covariates) =====================
+# same predictions, now controlling for *almost* everything
+pred_model3 <- predictions(model3, 
+                           newdata = datagrid(
+                             birth_weight_low = c("No", "Yes")))
+
+# Checks if the two predictions differ
+hypotheses(pred_model3, hypothesis = "b2 = b1")
+```
+
+```{r}
+# Event counts for the full sample
+df |>
+  group_by(birth_weight_low) |>
+  summarise(n = n(),
+            events = sum(asthma == "Yes", na.rm = TRUE),
+            pct = round(100 * events / sum(!is.na(asthma)), 1))
+
+# Adjusted prevalence differences (probability scale), Low vs Normal
+avg_comparisons(model1, variables = "birth_weight_low")     # unadjusted
+avg_comparisons(model2, variables = "birth_weight_low")     # adjusted
+avg_comparisons(model3, variables = "birth_weight_low")
+```
+
+***Interpretation***
+
+- *On the absolute (probability) scale, low-birth-weight children have about 5 percentage points higher predicted probability of asthma than normal-birth-weight children.*
+- *This difference is statistically significant in the unadjusted and age-adjusted models (prevalence difference ≈ 5.1–5.2 pp, 95% CI roughly 4–6 pp, p \< 0.001).*
+- *The absolute prevalence difference is consistent with the crude prevalences (14.3% vs 9.1%) and with the odds ratios — both scales agree that low birth weight is associated with higher asthma risk.*
+- *Reporting both measures is useful because the odds ratio captures the relative association while the prevalence difference conveys the absolute public-health impact.*
+
+------------------------------------------------------------------------
+
+# Table 3. Adjusted Associations between Birth Weight Status and Ever Asthma Diagnosis, Stratified by Age Group\*
+
+Because asthma diagnoses accumulate over childhood and younger children have had less time to be diagnosed, we conducted a parallel analysis stratified by age group to examine whether the association between low birth weight and asthma differed across developmental stages. We repeated the fully adjusted model separately within each of the four age strata (infants and toddlers \[0–2\], preschool \[3–5\], middle childhood \[6–12\], and adolescents \[13–17\]) excluding age from the covariate set, since age no longer varies meaningfully within a stratum. As in Table 2, we report both the odds ratio and the absolute prevalence difference with 95% confidence intervals for each age group, summarized in Table 3. The individual stratified models are shown below.
+
++-------------------+---------------------+---------------+--------------------------+------------------+
+| Age group         | Birth weight status | Events, N (%) | Prevalence difference %\ | Odds ratio\      |
+|                   |                     |               | (95% CI)                 | (95% CI)         |
++===================+=====================+===============+==========================+==================+
+| Toddler\          | Normal birth weight | 193 (2.3%)    | Reference                | 1.00             |
+| (0-2 years)       |                     |               |                          |                  |
++-------------------+---------------------+---------------+--------------------------+------------------+
+|                   | Low birth weight    | 38 (5.3%)     | 0.8 (−0.5 to 2.2)        | 1.37 (0.86–2.14) |
++-------------------+---------------------+---------------+--------------------------+------------------+
+| Preschool\        | Normal birth weight | 671 (6.4%)    | Reference                | 1.00             |
+| (3-5 years)       |                     |               |                          |                  |
++-------------------+---------------------+---------------+--------------------------+------------------+
+|                   | Low birth weight    | 119 (11.3%)   | 2.6 (0.5 to 4.6)         | 1.44 (1.11–1.86) |
++-------------------+---------------------+---------------+--------------------------+------------------+
+| Middle childhood\ | Normal birth weight | 1527 (10.0%)  | Reference                | 1.00             |
+| (6-12 years)      |                     |               |                          |                  |
++-------------------+---------------------+---------------+--------------------------+------------------+
+|                   | Low birth weight    | 241 (15.9%)   | 1.8 (−0.1 to 3.8)        | 1.21 (1.00–1.45) |
++-------------------+---------------------+---------------+--------------------------+------------------+
+| Teenager\         | Normal birth weight | 1967 (14.3%)  | Reference                | 1.00             |
+| (13-17 years)     |                     |               |                          |                  |
++-------------------+---------------------+---------------+--------------------------+------------------+
+|                   | Low birth weight    | 263 (19.7%)   | 1.1 (−1.1 to 3.4)        | 1.09 (0.92–1.30) |
++-------------------+---------------------+---------------+--------------------------+------------------+
+
+~Adjusted results estimated using logistic regression, run separately within each age stratum, adjusted for sex, race/ethnicity, preterm birth, familial poverty ratio, education level of adults, insurance type, and household smoker status~
+
+***Table 3 Notes:***
+
+- *Only **preschool (3-5)** is significant on both scales (prevalence diff CI excludes 0, OR CI excludes 1).*
+- ***Middle childhood (6-12)** is borderline on both (OR lower bound = 1.00, prevalence diff lower bound = −0.1).*
+- ***Toddlers** and **teens** are non-significant.*
+- *The overall pattern: the low-birth-weight/asthma association is strongest in early childhood and fades with age.*
+
+------------------------------------------------------------------------
+
+## Age-Stratified Models (Table 3)
+
+### Infants to Toddlers (0-2 years) Model
+
+```{r}
+# Toddlers (0-2 years)
+
+# fit the asthma model for infants to toddlers
+model_toddler <- glm(asthma ~ birth_weight_low + sex + race + born_early 
+                     + poverty + education + insurance_type + cigarettes,
+                     data = filter(df, age_cats == "Infants/Toddlers (0-2)"),
+                     family = binomial)
+
+# pull the odds ratio + CI for low birth weight
+tidy(model_toddler, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(str_detect(term, "birth_weight_low"))
+
+# checks how many kids the model used
+nobs(model_toddler)
+
+# predicted asthma probability, No vs Yes
+pred_toddler <- predictions(model_toddler,
+                            newdata = datagrid(
+                              birth_weight_low = c("No", "Yes")))
+
+# check if the two predictions differ
+hypotheses(pred_toddler, hypothesis = "b1 = b2")
+```
+
+**Interpretation**
+
+- *Toddlers (0-2): the birth weight association is not significant in this age group. OR = 1.37 (95% CI: 0.86–2.14, p = 0.17) — the CI crosses 1.*
+- *Sample size: 8,788 toddlers.*
+- *Interpretation: among toddlers, low birth weight shows no statistically significant association with asthma on either scale. The OR points in the same direction as the overall analysis but is imprecise, likely because asthma is rarer and less established at this age (fewer cases to detect an effect).*
+
+### Preschoolers (3-5 years) Model
+
+```{r}
+# Preschool (3-5 years)
+
+# fit the asthma model for preschoolers
+model_prek <- glm(asthma ~ birth_weight_low + sex + race + born_early +
+                    poverty + education + insurance_type + cigarettes,
+                  data = filter(df, age_cats == "Preschool (3-5)"),
+                  family = binomial)
+
+# pull the odds ratio + CI for low birth weight
+tidy(model_prek, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(str_detect(term, "birth_weight_low"))
+
+# Checks how many kids did the model use
+nobs(model_prek)
+
+# Predicted asthma probability, No vs Yes
+pred_prek <- predictions(model_prek,
+                         newdata = datagrid(
+                           birth_weight_low = c("No", "Yes")))
+
+# Checks if the two predictions differ
+hypotheses(pred_prek, hypothesis = "b1 = b2")
+
+```
+
+**Interpretation**
+
+- *Preschool (3-5): the birth weight association is significant here. OR = 1.44 (95% CI: 1.11–1.86, p = 0.006) — CI excludes 1.*
+- *Same direction as the overall analysis (reference = low birth weight, so not-low-birth-weight kids have higher odds).*
+- *Sample size: 11,115 preschoolers.*
+- *Interpretation: among preschoolers, low birth weight is significantly associated with asthma on the relative (odds) scale, unlike toddlers where it wasn't. The absolute difference remains modest.*
+
+### Middle Childhood (6-12 years) Model
+
+```{r}
+# Middle childhood (6-12)
+
+# fit the asthma model for middle childhood
+model_middle <- glm(asthma ~ birth_weight_low + sex + race + born_early +
+                      poverty + education + insurance_type + cigarettes,
+                    data = filter(df, age_cats == "Middle childhood (6-12)"),
+                    family = binomial)
+
+# pull the odds ratio + CI for low birth weight
+tidy(model_middle, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(str_detect(term, "birth_weight_low"))
+
+# checks how many kids did the model use
+nobs(model_middle)
+
+# Predicted asthma probability, No vs Yes
+pred_middle <- predictions(model_middle,
+                           newdata = datagrid(
+                             birth_weight_low = c("No", "Yes")))
+
+# # check if the two predictions differ
+hypotheses(pred_middle, hypothesis = "b1 = b2")
+```
+
+**Interpretation**
+
+- *Middle childhood (6-12): the birth weight association is borderline — just misses significance. OR = 1.21 (95% CI: 0.998–1.45, p = 0.051). The CI barely touches 1.*
+- *Largest subsample: 16,280 kids.*
+- *Interpretation: among middle-childhood kids, low birth weight shows a suggestive but not quite statistically significant association with asthma (p right at 0.05, CI's lower bound essentially at 1). The effect size (OR 1.21) matches the overall fully-adjusted estimate, so it's consistent in direction and magnitude — just short of the significance threshold in this subgroup.*
+
+### Teenagers (13-17 years) Model
+
+```{r}
+# Teenagers (13-17)
+
+# Fit the asthma model for teens
+model_teens <- glm(asthma ~ birth_weight_low + sex + race + born_early +
+                      poverty + education + insurance_type + cigarettes,
+                    data = filter(df, age_cats == "Teenagers (13-17)"), 
+                    family = binomial)
+
+# Pull the odds ratio + CI for low birth weight
+tidy(model_teens, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(str_detect(term, "birth_weight_low"))
+
+# Checks how many teens the model used
+nobs(model_teens)
+
+# Predicted asthma probability, No vs Yes
+pred_teens <- predictions(model_teens,
+                           newdata = datagrid(
+                             birth_weight_low = c("No", "Yes")))
+
+# Checks if the two predictions differ
+hypotheses(pred_teens, hypothesis = "b1 = b2")
+```
+
+**Interpretation**
+
+- *Teenagers (13-17): the birth weight association is not significant. OR = 1.09 (95% CI: 0.92–1.30, p = 0.32) — CI crosses 1.*
+- *Sample size: 14,397 teens.*
+- *Interpretation: among teenagers, low birth weight shows no significant association with asthma on either scale. This is the weakest effect of all age groups (OR closest to 1), suggesting any early birth-weight association has largely faded by adolescence.*
+
+```{r}
+# Information for filling out Table 3
+
+# Gives the covariate-adjusted prevalence difference on the probability scale.
+avg_comparisons(model_toddler, variables = "birth_weight_low")
+avg_comparisons(model_prek,    variables = "birth_weight_low")
+avg_comparisons(model_middle,  variables = "birth_weight_low")
+avg_comparisons(model_teens,   variables = "birth_weight_low")
+```
+
+**Interpretation**
+
+- *These are the covariate-adjusted absolute differences (low vs normal birth weight) within each age stratum, and they populate the prevalence-difference column of Table 3.*
+
+- *Only preschool (3–5) reaches significance (2.6 pp, 95% CI 0.5–4.6). Toddlers (0.8 pp), middle childhood (1.8 pp), and teenagers (1.1 pp) all have confidence intervals that cross zero.*
+
+- *The pattern mirrors the odds ratios: the absolute effect of low birth weight on asthma risk is largest in early childhood and diminishes with age.*
+
+------------------------------------------------------------------------
+
+# Results
+
+**TO BE COMPLETED**
+
+------------------------------------------------------------------------
+
+# Conclusions
+
+**TO BE COMPLETED**
+
+------------------------------------------------------------------------
+
+# Appendix
+
+## Forest Plot: Odds Ratios Across Models
+
+This appendix figure presents a forest plot summarizing the birth-weight odds ratios across the three overall models. Plotting the unadjusted, age-adjusted, and fully adjusted estimates together on a single axis, with a reference line at an odds ratio of 1, provides a visual summary of how the association attenuated as covariates were added. It presents the same results reported in Table 2 in graphical form.
+
+```{r}
+#| label: fig-forest-appendix
+#| fig-cap: "Odds ratios for low birth weight across the three overall models."
+
+strat <- bind_rows(
+  tidy(model_toddler, exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Toddler (0-2)"),
+  tidy(model_prek,    exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Preschool (3-5)"),
+  tidy(model_middle,  exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Middle childhood (6-12)"),
+  tidy(model_teens,   exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Teenager (13-17)")
+) |>
+  filter(str_detect(term, "birth_weight_low")) |>
+  mutate(age_group = factor(age_group,
+                            levels = c("Teenager (13-17)", "Middle childhood (6-12)",
+                                       "Preschool (3-5)", "Toddler (0-2)")))
+
+ggplot(strat, aes(x = estimate, y = age_group)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
+  labs(title = "Low Birth Weight and Asthma Odds by Age Group",
+       subtitle = "Association is strongest in early childhood and fades with age",
+       x = "Odds ratio (95% CI)", y = NULL,
+       caption = "Each age stratum adjusted separately. Data from 2023 NSCH") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11,
+                              face = "bold",
+                              hjust = 0.5),
+    plot.subtitle = element_text(size = 9, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10), size = 9),
+    axis.title.y = element_text(margin = margin(r = 10), size = 9),
+    plot.caption = element_text(
+      size = 8,
+      color = "darkgray",
+      margin = margin(t = 15, b = 10, unit = "pt")
+    ))
+```

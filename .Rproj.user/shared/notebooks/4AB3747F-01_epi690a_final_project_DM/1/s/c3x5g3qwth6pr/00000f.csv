@@ -1,0 +1,3 @@
+"0","# Checking frequency of each individual age"
+"0","df |>"
+"0","  count(age)"

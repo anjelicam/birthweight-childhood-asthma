@@ -1,0 +1,6 @@
+"0","# Event counts for the full sample"
+"0","df |>"
+"0","  group_by(birth_weight_low) |>"
+"0","  summarise(n = n(),"
+"0","            events = sum(asthma == ""Yes"", na.rm = TRUE),"
+"0","            pct = round(100 * events / sum(!is.na(asthma)), 1))"

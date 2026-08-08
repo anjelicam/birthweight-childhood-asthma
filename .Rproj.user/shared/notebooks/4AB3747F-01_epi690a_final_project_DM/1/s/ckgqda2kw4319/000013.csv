@@ -1,0 +1,5 @@
+"0","# Import data"
+"0","df_raw <- import(here(""data"", ""raw"", ""nsch2023data.sas7bdat""))"
+"0",""
+"0","# Review data structure"
+"0","head(df_raw)"

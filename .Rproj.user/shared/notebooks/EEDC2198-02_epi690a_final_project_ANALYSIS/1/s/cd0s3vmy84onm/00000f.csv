@@ -1,0 +1,6 @@
+"0","# Information for filling out Table 3"
+"0",""
+"0","# Gives the covariate-adjusted prevalence difference on the probability scale."
+"0","avg_comparisons(model_toddler, variables = ""birth_weight_low"")"
+"2","Error: object 'model_toddler' not found
+"

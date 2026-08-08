@@ -1,0 +1,5 @@
+"0",""
+"0","# missingness per variable"
+"0","df |> select(asthma, birth_weight_low, age, sex, race, born_early,"
+"0","             poverty, education, insurance_type, cigarettes) |>"
+"0","  miss_var_summary()"

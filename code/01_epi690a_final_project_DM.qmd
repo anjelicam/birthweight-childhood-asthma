@@ -1,0 +1,384 @@
+---
+title: "Among U.S. children aged 0–17, is low birth weight associated with increased odds of an ever asthma diagnosis, after adjusting for child age, sex, race/ethnicity, household income, and secondhand smoke exposure?"
+author:
+  - name: Javier Diaz Collante, Rachel Huselid, Anjelica Martinez
+    email: anjelicamart@umass.edu
+    affiliation: Department of Biostatistics & Epidemiology
+  - name: "Created on: June 28, 2026"
+author-title: "Author"
+affiliation-title: "University of Massachusetts - Amherst"
+abstract-title: Purpose
+abstract: This notebook is the data management (data prep and cleaning) for our EPI 690A final project. 
+published-title: "Date Updated"
+format:
+  html:
+    embed-resources: true
+    anchor-sections: true
+    code-fold: show
+    code-tools: true
+    fig-width: 6
+    fig-height: 4
+    code-block-bg: "#f1f3f5"
+    code-block-border-left: "#31BAE9"
+    mainfont: Source Sans Pro
+    theme: journal
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    captions: true
+    table-captions: true
+---
+
+# Setup
+
+Load relevant packages and setup code to help with HTML rendering.
+
+```{r}
+#| label: load packages
+#| code-summary: "Packages"
+
+# Packages Used
+ 
+pacman::p_load(
+    dplyr,        # data manipulation
+    forcats,      # tools for working with categorical variables
+    here,         # file paths relative to R project root folder
+    rio,          # import/export of many types of data 
+    tidyverse,    # includes many packages for tidy data wrangling 
+    Hmisc,        # includes many functions in Harrellverse 
+    data.table,   # (alternative) faster than tidyverse
+    qreport,      # useful for formatting in quarto
+    sparkline,    # inline interactive plots
+    lubridate,    # simplifies working with dates
+    janitor,      # tables and data cleaning
+    skimr,        # summary statistics
+    gtsummary,    # making descriptive and statistical tables
+    rstatix,      # quickly run statistical tests and summaries
+    labelled,     # labels variables
+    naniar,        # assessing missing data
+    datadictionary, # creates data dictionaries
+    haven
+
+ )
+ 
+options(scipen = 999) # removes scientific notation
+```
+
+```{r}
+#| label: setup
+#| code-summary: "Setup"
+
+# Source: Frank Harrell https://hbiostat.org/rflow/ 
+# Make base graphics look better:
+spar <- function(bot=0, left=0, top=0, rt=0)
+  par(mar=c(3.25 + bot, 5 + left, 0.5 + top, 0.5 * rt),
+      lwd=1.75, mgp=c(2.0, 0.475, 0), tcl=-0.4, xpd=FALSE, ps=14,
+      cex.lab=1.15, cex.axis=0.8)
+
+# Set abbreviations for chunk option names
+knitr::set_alias(w = 'fig.width', h = 'fig.height')
+
+options(prType='html')   # for certain Hmisc and rms functions
+
+# To automatically sense which output format is being created and 
+# create a character string that will work for both `html` and `LaTeX`.  
+# For `LaTeX`, a boxed note in the body of the document will appear.
+
+ishtml <- knitr::is_html_output()
+mNote  <- if(ishtml) '.column-margin' else '.callout-note appearance="minimal"'
+
+#FHarrell: "Note that to initialize javascript jQuery dependencies 
+# we must include sparkline::sparkline(0) somewhere in the report 
+# before creating the first sparkline output."
+sparkline::sparkline(0)
+```
+
+# Codebook
+
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+|                      |                       |                                                            |                                                                                                          |
++======================+=======================+============================================================+==========================================================================================================+
+| **New Variable**     | **Original Variable** | **Label**                                                  | **Values**                                                                                               |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| age                  | SC_AGE_YEARS          | Age of selected child (years)                              |                                                                                                          |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| sex                  | SC_SEX                | Sex of selected child                                      | 1 = Male                                                                                                 |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 2 = Female                                                                                               |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| race                 | SC_RACE_R             | Race of selected child (detailed)                          | 1 = White alone                                                                                          |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 2 = Black or African American alone                                                                      |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 3 = American Indian or Alaska Native alone                                                               |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 4 = Asian alone                                                                                          |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 5 = Native Hawaiian and Other Pacific Islander alone                                                     |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 7 = Two or More Races                                                                                    |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| hispanic             | SC_HISPANIC_R         | Hispanic origin of selected child (groups)                 | 1 = Hispanic or Latino Origin                                                                            |
+|                      |                       |                                                            |                                                                                                          |
+|                      |                       |                                                            | 2 = Not Hispanic or Latino Origin                                                                        |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| birth_weight_ver_low | BIRTHWT_VL            | Birth weight is very low (\<1500g)                         | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| birth_weight_low     | BIRTHWT_L             | Birth weight is low (\<2500g)                              | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| asthma               | K2Q40A                | Ever diagnosed with asthma                                 | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| born_early           | K2Q05                 | Born 3 or more weeks before due date                       | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| breastfed            | K6Q40                 | Ever breastfed                                             | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| poverty              | FPL_I1                | Family poverty ratio, first implicate                      | 50 or less - 400 or more                                                                                 |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| education            | HIGRADE_TVIS          | Highest level of education among reported adults, Detailed | 1 = Less than high school\                                                                               |
+|                      |                       |                                                            | 2 = High school (including vocational, trade, or business school)\                                       |
+|                      |                       |                                                            | 3 = Some college or Associate Degree\                                                                    |
+|                      |                       |                                                            | 4 = College degree or higher                                                                             |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| insurance_type       | INSTYPE               | Insurance type                                             | 1 = Public only (government assistance)\                                                                 |
+|                      |                       |                                                            | 2 = Private only (privately purchased, including through ACA marketplace, through employer, or TRICARE)\ |
+|                      |                       |                                                            | 3 = Private and public\                                                                                  |
+|                      |                       |                                                            | 5 = Not insured                                                                                          |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| cigarettes           | K9Q40                 | Anyone in household use cigarettes                         | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| smoke_inside         | K9Q41                 | Anyone smoke inside of home                                | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| vape                 | VAPE                  | Vape/E-Cigarettes inside of home                           | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+| allergies            | ALLERGIES             | Ever diagnosed with allergies                              | 1 = Yes\                                                                                                 |
+|                      |                       |                                                            | 2 = No                                                                                                   |
++----------------------+-----------------------+------------------------------------------------------------+----------------------------------------------------------------------------------------------------------+
+
+~Codebook provided by National Survey of Children's Health~
+
+# Load Data
+
+Data was collected from the canvas website and originally created by the NCSH.
+
+```{r}
+# Import data
+df_raw <- import(here("data", "raw", "nsch2023data.sas7bdat"))
+
+# Review data structure
+head(df_raw)
+```
+
+```{r}
+count(df_raw, BIRTHWT)
+```
+
+# Data Cleaning/Prep
+
+Since we are only focusing on the variables listed above in the codebook I went ahead and selected them in the code chunk below while simultaneously renaming the columns to more easy-to-read names (see codebook).
+
+```{r}
+# Create new dataframe with variables of interest
+df <- df_raw |>
+  # Selects columns of interests and renames variables
+  select(
+    age = SC_AGE_YEARS,
+    sex = SC_SEX,
+    race = SC_RACE_R,
+    hispanic = SC_HISPANIC_R,
+    birth_weight_status = BIRTHWT,
+    birth_weight_very_low = BIRTHWT_VL,
+    birth_weight_low = BIRTHWT_L,
+    asthma = K2Q40A,
+    born_early = K2Q05,
+    breastfed = K6Q40,
+    poverty = FPL_I1,
+    education = HIGRADE_TVIS,
+    insurance_type = INSTYPE,
+    cigarettes = K9Q40,
+    smoke_inside = K9Q41,
+    vape = VAPE,
+    allergies = ALLERGIES)
+  
+```
+
+Next I converted all the categorical variables into factors. First I selected all the column names that have Yes and No as responses and changed them all to factor with the levels 1,2 assigned to "Yes" and "No". For the remaining variables that were also factors I selected each column name individually and assigned their corresponding levels and labels according to the codebook provided by NCSH.
+
+```{r}
+# Converts categorical variables to factors, adds levels and labels
+df <- df |>
+  mutate(across(c(
+    birth_weight_low, birth_weight_very_low, asthma, born_early,
+    breastfed, cigarettes, smoke_inside, vape, allergies, hispanic),
+    \(x) factor(x, levels = c(1, 2), labels = c("Yes", "No")))) |>
+  mutate(sex = factor(sex, 
+                      levels = 1:2, 
+                      labels = c("Male", "Female"))) |>
+  mutate(race = factor(race, 
+                       levels = c(1, 2, 3, 4, 5, 7), 
+                       labels = c("White", 
+                                  "Black or African American", 
+                                  "American Indian or Alaska Native", 
+                                  "Asian", 
+                                  "Native Hawaiian and other Pacific Islander", 
+                                  "Two or more races"))) |> 
+  #mutate(hispanic = factor(hispanic, 
+  #                        levels = c(1, 2),
+  #                         labels = c("Hispanic or Latino origin", 
+  #                                    "Not Hispanic or Latino origin"))) |>
+  mutate(education = factor(education, 
+                            levels = 1:4,
+                            labels = c("Less than high school", 
+                                       "High school", 
+                                       "Some college", 
+                                       "College degree or higher"))) |>
+  mutate(insurance_type = factor(insurance_type, 
+                                levels = c(1, 2, 3, 5), 
+                                labels = c("Public", "Private", 
+                                           "Private and Public", 
+                                           "Not insured"))) |>
+  mutate(birth_weight_status = factor(birth_weight_status,
+                                      levels = 1:3,
+                                      labels = c(
+                                        "Very low birth weight (less than 1,500g)",
+                                        "Low birth weight (less than 2,500g)",
+                                        "Not low birth weight")
+                                      )
+         )
+```
+
+I ran a `str` function to make sure that all columns had the correct datatype and that they were assigned the correct labels and levels.
+
+```{r}
+# Check each column has the right data type and correct labels/levels
+str(df)
+```
+
+Finally, to make sure that all recoding worked correctly I used the `summary` function to compare it's counts to the frequency tables provided by the NCSH.
+
+```{r}
+# Review the counts and check for NA's
+summary(df)
+```
+
+Because the `summary` function provides summary statistics for numerical/continuous variables I used the `count` function to match the frequency tables generated here and compared to the ones provided by NCSH.
+
+```{r}
+# Checking frequency of each individual age
+df |>
+  count(age)
+
+# Checking frequency of each poverty code
+df |>
+  count(poverty)
+```
+
+## Missingness
+
+Two variables stand out with missingness: `smoke_inside` and `breastfed`. This may be due to the structure of the survey that is visible in the codebook frequency list.
+
+`smoke_inside` has the two frequencies "logical skip" and "no valid responses" reported as `NA`s which is causing the `NA` count to increase.
+
+`breastfed` has the two frequencies "Not in universe" and "No valid response" both reporting as `NA`s which is also causing its `NA` count to increase.
+
+As a group we decided to drop these two variables and only use `cigarettes` as our dichotomous variable that lists smoker status as Yes or No and doesn't have logical skips that bleed into the total `NA` count.
+
+```{r}
+miss_var_summary(df)
+```
+
+### Dropping `smoke_inside` and `breastfed`
+
+We decided to drop the variable `smoke_inside` as we felt that the variable `cigarettes` which represents household smoker status would better reflect the variable of interest and due to `smoke_inside` having 89.8% of missingness. `breastfed` was dropped due to a large amount of missingness `NA (61.3%)`.
+
+```{r}
+# Removes these variables
+df <- df |> select(-c(smoke_inside, breastfed))
+
+# Check that those columns have been removed successfully
+names(df)
+```
+
+# Creating the age category variable
+
+The variables we decided to create are the age categories for the `age` variable. We chose to divide the ages into the following groups:
+
+- infants/toddlers = 0 to 2 years of age
+
+- preschool = 3 to 5 years of age
+
+- middle childhood = 5 to 12 years of age
+
+- teenagers = 13 to 17 years of age
+
+```{r}
+# Create age category (factor) variable
+df <- df |>
+  mutate(
+    age_cats = case_when(
+      age < 3 ~ "Infants/Toddlers (0-2)",
+      age <= 5 ~ "Preschool (3-5)",
+      age <= 12 ~ "Middle childhood (6-12)",
+      TRUE ~ "Teenagers (13-17)"
+    ),
+    age_cats = factor(age_cats,
+                      levels = c("Infants/Toddlers (0-2)", 
+                                 "Preschool (3-5)", 
+                                 "Middle childhood (6-12)", 
+                                 "Teenagers (13-17)")),
+    .after = age
+  )
+
+# Ensure variable was created and that age matches selected category
+head(df)
+
+# Check the categories are working correctly
+df |>
+  group_by(age_cats) |>
+  summarise(min = min(age), max = max(age), n = n())
+```
+
+# Labeling with `labelled`
+
+For printing tables, I went ahead and created labels for each variable using the `labelled` package.
+
+```{r}
+
+# Assign labels to each variable
+var_label(df) <- list(
+  age = "Age, years",
+  age_cats = "Age group",
+  sex = "Sex",
+  race = "Race",
+  hispanic = "Hispanic or Latino origin", 
+  birth_weight_status = "Birth weight Status",
+  birth_weight_very_low = "Very low birth weight (less than 1,500g)",
+  birth_weight_low = "Low birth weight (less than 2,500g)",
+  asthma = "Ever Asthma Diagnosis",
+  born_early = "Pre-term Birth (Born 3 or more weeks before due date)",           
+  poverty = "Familial poverty ratio",
+  education = "Highest level of education of adults",
+  insurance_type = "Insurance Type",
+  cigarettes = "Secondhand Smoking (Household smoker)",
+  vape = "Vaping exposure",
+  allergies = "Allergies" 
+)
+
+# Check variables labelled correctly
+var_label(df)
+```
+
+# Exporting cleaned file
+
+Finally, I saved the cleaned data file to use in the analysis notebook.
+
+```{r}
+rio::export(df, here("data", "processed", "nsch2023_processed.rdata"))
+```

@@ -1,0 +1,8 @@
+"0","df |>"
+"0","  filter(!is.na(birth_weight_low), !is.na(asthma)) |>"
+"0","  group_by(age_cats, birth_weight_low) |>"
+"0","  summarise("
+"0","    n = n(),"
+"0","    events = sum(asthma == ""Yes""),   # adjust ""Yes"" to your asthma level"
+"0","    pct = round(100 * events / n, 1)"
+"0","  )"

@@ -1,0 +1,1 @@
+{"frames":[{"func":"avg_comparisons(model_toddler, variables = \"birth_weight_low\")","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0},{"func":"construct_call(model, \"comparisons\")","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error: object 'model_toddler' not found\n"}

@@ -1,0 +1,7 @@
+"0","# Relevel binary variables so ""No"" is the reference category"
+"0","# This makes every odds ratio read in the intuitive direction (exposed vs. unexposed)."
+"0",""
+"0","df$birth_weight_low <- relevel(df$birth_weight_low, ref = ""No"")  # OR = low vs normal birth weight"
+"0","df$born_early       <- relevel(df$born_early, ref = ""No"")        # OR = preterm vs full-term"
+"0","df$asthma           <- relevel(df$asthma, ref = ""No"")            # model P(asthma = Yes)"
+"0","df$cigarettes       <- relevel(df$cigarettes, ref = ""No"")        # OR = smoker vs non-smoker household"
