@@ -371,7 +371,7 @@ df |>
 
 To formally test the association between low birth weight and asthma, we fit a staged sequence of logistic regression models, presented in Table 2. The first model was unadjusted, the second adjusted for child age, and the third adjusted for the full set of covariates (sex, race, preterm birth, familial poverty ratio, parental education, insurance type, and household smoker status). For each model we report both the odds ratio and the absolute prevalence difference with 95% confidence intervals, since the two measures convey complementary information about the relative and absolute magnitude of the association.
 
-Low birth weight was significantly associated with ever having an asthma diagnosis across all three models. The unadjusted odds ratio was 1.67 (95% CI 1.52–1.82) and was essentially unchanged after adjusting for age (OR 1.67, 95% CI 1.53–1.83), indicating that age did not confound the relationship. After full adjustment, the association attenuated to an odds ratio of 1.21 (95% CI 1.08–1.35) but remained statistically significant, indicating that much of the crude association was explained by demographic and socioeconomic factors while an independent association persisted; this pattern of attenuation across the three models is shown graphically in @fig-forest-models in the appendix. On the absolute scale, low-birth-weight children had roughly a 5 percentage-point higher probability of asthma than normal-birth-weight children.
+Low birth weight was significantly associated with ever having an asthma diagnosis across all three models. The unadjusted odds ratio was 1.67 (95% CI 1.52–1.82) and was essentially unchanged after adjusting for age (OR 1.67, 95% CI 1.53–1.83), indicating that age did not confound the relationship. After full adjustment, the association attenuated to an odds ratio of 1.21 (95% CI 1.08–1.35) but remained statistically significant, indicating that much of the crude association was explained by demographic and socioeconomic factors while an independent association persisted; this pattern of attenuation across the three models is shown graphically in the appendix. On the absolute scale, low-birth-weight children had roughly a 5 percentage-point higher probability of asthma than normal-birth-weight children.
 
 ```{r}
 tbl <- tribble(
@@ -452,10 +452,7 @@ tidy(model1, exponentiate = TRUE, conf.int = TRUE)
 
 ***Interpretation:***
 
-- *Model 1 is unadjusted and shows a significant association between birth weight status and asthma (OR = 1.67, 95% CI: 1.52–1.82, p \< 0.001).*
-- *The reference level is normal birth weight, so this OR compares low-birth-weight children to normal-birth-weight children.*
-- *Interpretation: low-birth-weight children had about 1.67× the odds of an asthma diagnosis compared to normal-birth-weight children.*
-- *This is consistent with the crude prevalences (14.3% asthma among low-birth-weight children vs 9.1% among normal-birth-weight children) and with the study hypothesis.*
+Model 1 is unadjusted and shows a significant association between birth weight status and asthma (OR = 1.67, 95% CI: 1.52–1.82, p \< 0.001). Since the reference level is normal birth weight, this odds ratio compares low-birth-weight children to normal-birth-weight children directly. Low-birth-weight children had about 1.67 times the odds of an asthma diagnosis compared to normal-birth-weight children. This finding is consistent with the crude prevalences observed in the sample, 14.3% of low-birth-weight children had an asthma diagnosis compared to 9.1% of normal-birth-weight children, and it supports the study's underlying hypothesis.
 
 ### Model 2: Adjusted for Age
 
@@ -472,10 +469,7 @@ tidy(model2, exponentiate = TRUE, conf.int = TRUE)
 
 **Interpretation:**
 
-- *Model 2 adds age as a covariate. After adjusting for age, the birth weight association is essentially unchanged: OR = 1.67 (95% CI: 1.53–1.83, p \< 0.001), nearly identical to Model 1.*
-- *Low-birth-weight children had about 1.67× the odds of an asthma diagnosis compared to normal-birth-weight children.*
-- *Age is significant: OR = 1.10 per year (95% CI: 1.09–1.11, p \< 0.001), so each additional year is associated with about 10% higher odds of an ever asthma diagnosis.*
-- *Because the birth weight OR is stable after adjusting for age, age is not confounding the birth weight–asthma relationship.*
+Model 2 adds child age as a covariate. After adjusting for age, the birth weight association is essentially unchanged, OR = 1.67 (95% CI: 1.53–1.83, p \< 0.001), nearly identical to Model 1. Low-birth-weight children continued to have about 1.67 times the odds of an asthma diagnosis compared to normal-birth-weight children. Age itself was also significantly associated with asthma, OR = 1.10 per year (95% CI: 1.09–1.11, p \< 0.001), meaning each additional year of age was associated with roughly 10% higher odds of an ever asthma diagnosis, consistent with the fact that diagnoses accumulate as children get older. Because the birth weight odds ratio remained stable after adjusting for age, this indicates that age is not confounding the relationship between birth weight and asthma.
 
 ### Model 3: Adjusted for age, sex, race, preterm birth, familial poverty ratio, education level of adults, insurance type, and household smoker status
 
@@ -494,33 +488,11 @@ tidy(model3, exponentiate = TRUE, conf.int = TRUE)
 
 **Interpretation**
 
-***Main finding — birth weight (fully adjusted):***
+Model 3 adds the full covariate set, sex, race, preterm birth, familial poverty ratio, education level of adults, insurance type, and household smoker status, on top of age. After this full adjustment, the birth weight association attenuates meaningfully: OR = 1.21 (95% CI: 1.08–1.35, p \< 0.001), down from OR = 1.67 in both Model 1 and Model 2. Low-birth-weight children had about 1.21 times the odds, a 21% increase in odds, of an ever asthma diagnosis compared to normal-birth-weight children, holding the other covariates constant. However, this association remains statistically significant, since the 95% confidence interval does not cross 1.00, though the magnitude is now notably smaller than in the unadjusted and age-adjusted models.
 
-- *After full adjustment, the association attenuates from 1.67 to OR = 1.21 (95% CI 1.08–1.35, p \< 0.001) but remains significant.*
+This attenuation indicates that part of the crude birth weight-asthma association was confounded by the additional covariates introduced in this model, rather than reflecting a direct effect of birth weight alone. Race is the strongest driver of this attenuation: Black children had substantially higher odds of an asthma diagnosis than White children (OR ≈ 1.87, p \< 0.001), the largest independent association of any covariate in the model. Preterm birth also contributed meaningfully (OR ≈ 1.62, p \< 0.001) and is strongly correlated with low birth weight, so some of the crude birth weight effect seen in Models 1 and 2 was likely capturing the combined influence of race and prematurity rather than low birth weight operating independently. Insurance type was also significantly associated with asthma diagnosis, contributing further to the attenuation. Familial poverty ratio, by contrast, was not significantly associated with asthma in this model (p = 0.458), despite being included in the adjustment set.
 
-- *Low-birth-weight children have \~1.21× the odds of asthma vs normal-birth-weight children.*
-
-- *The drop from 1.67 → 1.21 means much of the crude association is explained by the other covariates, but an independent association persists.*
-
-***Other significant predictors (CI excludes 1):***
-
-- *Age: OR = 1.10/year — \~10% higher odds per additional year of age.*
-
-- *Sex (Female): OR = 0.70 — girls have lower odds than boys.*
-
-- *Race (vs White): Black = 1.87 (higher); Asian = 0.82 (lower); Two or more races = 1.39 (higher).*
-
-- *Preterm birth (Yes): OR = 1.62 — premature children have higher odds.*
-
-- *Education (Some college): OR = 1.31 (higher vs reference).*
-
-- *Insurance (vs Public): Private = 0.74 (lower); Private and Public = 1.19 (higher); Not insured = 0.65 (lower).*
-
-- *Household smoker (Yes): OR = 1.10 (95% CI 1.00–1.21, p = 0.05) — \~10% higher odds, but right at the significance threshold.*
-
-***Not significant (CI crosses 1):***
-
-- *Poverty (\~1.00), American Indian/Alaska Native, Native Hawaiian/Pacific Islander, and High school and College-degree education.*
+Because the birth weight odds ratio drops substantially once these covariates are added, race, preterm birth, and insurance type appear to confound part of the crude birth weight-asthma relationship. Even so, a statistically significant association between low birth weight and asthma persists after full adjustment, suggesting that low birth weight retains an independent relationship with asthma risk beyond what these covariates alone can explain.
 
 ### Model 3 Visualizations
 
@@ -555,13 +527,7 @@ plot_predictions(model3, condition = c("age", "birth_weight_low")) +
 
 ***Interpretation:***
 
-- *Predicted asthma probability rises steadily with age in both groups, from about 4–5% at birth to 16–19% by age 17 — consistent with the age odds ratio of 1.10 (asthma diagnoses accumulate as children get older).*
-
-- *Low-birth-weight children (blue) sit above normal-birth-weight children (red) at every age, showing the adjusted birth-weight effect (OR = 1.21) holds across all of childhood.*
-
-- *The gap between the two curves widens in absolute terms at older ages — expected on the probability scale, since a constant odds ratio produces a larger percentage-point difference when the baseline probability is higher.*
-
-- *The confidence bands overlap modestly, reflecting that the adjusted birth-weight association, while significant, is smaller than the crude one.*
+*Predicted asthma probability rises steadily with age in both groups, from about 4–5% at birth to 16–19% by age 17 which is consistent with the age odds ratio of 1.10 (asthma diagnoses accumulate as children get older). Low-birth-weight children (blue) sit above normal-birth-weight children (red) at every age, showing the adjusted birth-weight effect (OR = 1.21) holds across all of childhood. The gap between the two curves widens in absolute terms at older ages. This is expected on the probability scale, since a constant odds ratio produces a larger percentage-point difference when the baseline probability is higher. The confidence bands overlap modestly, reflecting that the adjusted birth-weight association, while significant, is smaller than the crude one.*
 
 #### Coefficient Plot
 
@@ -607,17 +573,11 @@ modelplot(model3, coef_map = rev(labels), exponentiate = TRUE) +
 
 **Interpretation**
 
-- *Each point is a covariate's adjusted odds ratio from Model 3, with its 95% CI; the dashed line at OR = 1 marks no association, and intervals crossing it are not statistically significant.*
+*Each point is a covariate's adjusted odds ratio from Model 3, with its 95% CI; the dashed line at OR = 1 marks no association, and intervals crossing it are not statistically significant. Higher asthma odds (right of 1, CI excludes 1): Black race shows the largest increase (OR \~1.87), followed by preterm birth (\~1.62), two or more races (\~1.39), some college (\~1.31), private and public insurance (\~1.19), low birth weight (\~1.21), and age (\~1.10 per year). Lower asthma odds (left of 1, CI excludes 1): female sex (\~0.70), Asian race (\~0.82), private insurance (\~0.74), and not insured (\~0.65).*
 
-- ***Higher asthma odds (right of 1, CI excludes 1):** Black race shows the largest increase (OR \~1.87), followed by preterm birth (\~1.62), two or more races (\~1.39), some college (\~1.31), private and public insurance (\~1.19), low birth weight (\~1.21), and age (\~1.10 per year).*
+*On the significance boundary, household smoker (\~1.10) sits just right of 1 with its CI lower bound touching 1, a borderline positive association. No significant association (CI crosses 1): poverty ratio (\~1.00), American Indian/Alaska Native, Native Hawaiian/Pacific Islander, high school, and college degree or higher.*
 
-- ***Lower asthma odds (left of 1, CI excludes 1):** female sex (\~0.70), Asian race (\~0.82), private insurance (\~0.74), and not insured (\~0.65).*
-
-- ***On the significance boundary:** household smoker (\~1.10) sits just right of 1 with its CI lower bound touching 1 — a borderline positive association.*
-
-- ***No significant association (CI crosses 1):** poverty ratio (\~1.00), American Indian/Alaska Native, Native Hawaiian/Pacific Islander, high school, and college degree or higher.*
-
-- *Overall, the strongest independent predictors of asthma in the fully adjusted model are Black race and preterm birth, while low birth weight — the exposure of interest — remains modestly but significantly associated after accounting for all covariates.*
+*Overall, the strongest independent predictors of asthma in the fully adjusted model are Black race and preterm birth, while low birth weight (the exposure of interest) remains modestly but significantly associated after accounting for all covariates.*
 
 ------------------------------------------------------------------------
 
@@ -702,13 +662,7 @@ check_obs("MODEL 3", model3)
 
 ***Interpretation***
 
-- *The birth weight–asthma association is significant in all three models and consistent in direction (reference = low birth weight, so not-low-birth-weight children have higher odds).*
-
-- *Adjusting for age alone changes nothing (1.67 → 1.67) — age is not a confounder.*
-
-- *Full adjustment attenuates the OR from 1.67 to 1.21, so demographic and socioeconomic covariates explain a substantial part of the crude association, though a significant independent association remains.*
-
-- *One caveat to note: Model 3 dropped \~1,952 observations (52,532 → 50,580) due to missing data on the added covariates, so it isn't fit on quite the same sample as Models 1–2. The comparison is still valid but not strictly apples-to-apples.*
+*The birth weight–asthma association is significant in all three models and consistent in direction (reference = low birth weight, so not-low-birth-weight children have higher odds). Adjusting for age alone changes nothing (from 1.67 to 1.67), age is not a confounder. Full adjustment attenuates the OR from 1.67 to 1.21, so demographic and socioeconomic covariates explain a substantial part of the crude association, though a significant independent association remains. Model 3 dropped around1,952 observations (52,532 dropped from 50,580) due to missing data on the added covariates, so it isn't fit on quite the same sample as Models 1–2. The comparison is still valid but not strictly apples-to-apples.*
 
 ------------------------------------------------------------------------
 
@@ -762,10 +716,9 @@ avg_comparisons(model3, variables = "birth_weight_low")
 
 ***Interpretation***
 
-- *On the absolute (probability) scale, low-birth-weight children have about 5 percentage points higher predicted probability of asthma than normal-birth-weight children.*
-- *This difference is statistically significant in the unadjusted and age-adjusted models (prevalence difference ≈ 5.1–5.2 pp, 95% CI roughly 4–6 pp, p \< 0.001).*
-- *The absolute prevalence difference is consistent with the crude prevalences (14.3% vs 9.1%) and with the odds ratios — both scales agree that low birth weight is associated with higher asthma risk.*
-- *Reporting both measures is useful because the odds ratio captures the relative association while the prevalence difference conveys the absolute public-health impact.*
+On the absolute (probability) scale, low-birth-weight children had roughly 5 percentage points higher predicted probability of asthma than normal-birth-weight children in both the unadjusted and age-adjusted models (prevalence difference ≈ 5.1 to 5.2 percentage points, 95% CI roughly 4 to 6 percentage points, p \< 0.001). This is consistent with the crude prevalences (14.3% versus 9.1%) and with the corresponding odds ratios, both scales point toward the same conclusion that low birth weight is associated with higher asthma risk.
+
+After full adjustment in Model 3, the prevalence difference narrows to about 1.7 percentage points (95% CI: 0.7 to 2.7), mirroring the attenuation already seen in the odds ratio (1.67 to 1.21) and reflecting that much of the crude absolute difference is explained by the covariates added in that model. Reporting both the odds ratio and the prevalence difference is useful because the odds ratio captures the relative strength of the association while the prevalence difference conveys its absolute, population-level impact.
 
 ------------------------------------------------------------------------
 
@@ -802,10 +755,7 @@ Because asthma diagnoses accumulate over childhood and younger children have had
 
 ***Table 3 Notes:***
 
-- *Only **preschool (3-5)** is significant on both scales (prevalence diff CI excludes 0, OR CI excludes 1).*
-- ***Middle childhood (6-12)** is borderline on both (OR lower bound = 1.00, prevalence diff lower bound = −0.1).*
-- ***Toddlers** and **teens** are non-significant.*
-- *The overall pattern: the low-birth-weight/asthma association is strongest in early childhood and fades with age.*
+*Only preschool (3-5) is significant on both scales (prevalence diff CI excludes 0, OR CI excludes 1). Middle childhood (6-12) is borderline on both (OR lower bound = 1.00, prevalence diff lower bound = −0.1). Toddlers and teens are non-significant. The overall pattern: the low-birth-weight/asthma association is strongest in early childhood and fades with age.*
 
 ------------------------------------------------------------------------
 
@@ -840,9 +790,7 @@ hypotheses(pred_toddler, hypothesis = "b1 = b2")
 
 **Interpretation**
 
-- *Toddlers (0-2): the birth weight association is not significant in this age group. OR = 1.37 (95% CI: 0.86–2.14, p = 0.17) — the CI crosses 1.*
-- *Sample size: 8,788 toddlers.*
-- *Interpretation: among toddlers, low birth weight shows no statistically significant association with asthma on either scale. The OR points in the same direction as the overall analysis but is imprecise, likely because asthma is rarer and less established at this age (fewer cases to detect an effect).*
+*The birth weight association is not significant in this age group. OR = 1.37 (95% CI: 0.86–2.14, p = 0.17) as the CI crosses 1. The sample size is 8,788 toddlers. Among toddlers, low birth weight shows no statistically significant association with asthma on either scale. The OR points in the same direction as the overall analysis but is imprecise, likely because asthma is rarer and less established at this age (fewer cases to detect an effect).*
 
 ### Preschoolers (3-5 years) Model
 
@@ -874,10 +822,7 @@ hypotheses(pred_prek, hypothesis = "b1 = b2")
 
 **Interpretation**
 
-- *Preschool (3-5): the birth weight association is significant here. OR = 1.44 (95% CI: 1.11–1.86, p = 0.006) — CI excludes 1.*
-- *Same direction as the overall analysis (reference = low birth weight, so not-low-birth-weight kids have higher odds).*
-- *Sample size: 11,115 preschoolers.*
-- *Interpretation: among preschoolers, low birth weight is significantly associated with asthma on the relative (odds) scale, unlike toddlers where it wasn't. The absolute difference remains modest.*
+*The birth weight association is significant here. OR = 1.44 (95% CI: 1.11–1.86, p = 0.006) as the CI excludes 1. Same direction as the overall analysis (reference = low birth weight, so not-low-birth-weight kids have higher odds). The sample size is 11,115 preschoolers. Among preschoolers, low birth weight is significantly associated with asthma on the relative (odds) scale, unlike toddlers where it wasn't. The absolute difference remains modest.*
 
 ### Middle Childhood (6-12 years) Model
 
@@ -908,9 +853,7 @@ hypotheses(pred_middle, hypothesis = "b1 = b2")
 
 **Interpretation**
 
-- *Middle childhood (6-12): the birth weight association is borderline — just misses significance. OR = 1.21 (95% CI: 0.998–1.45, p = 0.051). The CI barely touches 1.*
-- *Largest subsample: 16,280 kids.*
-- *Interpretation: among middle-childhood kids, low birth weight shows a suggestive but not quite statistically significant association with asthma (p right at 0.05, CI's lower bound essentially at 1). The effect size (OR 1.21) matches the overall fully-adjusted estimate, so it's consistent in direction and magnitude — just short of the significance threshold in this subgroup.*
+*The birth weight association is borderline and just misses significance. OR = 1.21 (95% CI: 0.998–1.45, p = 0.051). The CI barely touches 1. This is the largest subsample with16,280 kids. Among middle-childhood kids, low birth weight shows a suggestive but not quite statistically significant association with asthma (p right at 0.05, CI's lower bound essentially at 1). The effect size (OR 1.21) matches the overall fully-adjusted estimate, so it's consistent in direction and magnitude, just short of the significance threshold in this subgroup.*
 
 ### Teenagers (13-17 years) Model
 
@@ -941,9 +884,7 @@ hypotheses(pred_teens, hypothesis = "b1 = b2")
 
 **Interpretation**
 
-- *Teenagers (13-17): the birth weight association is not significant. OR = 1.09 (95% CI: 0.92–1.30, p = 0.32) — CI crosses 1.*
-- *Sample size: 14,397 teens.*
-- *Interpretation: among teenagers, low birth weight shows no significant association with asthma on either scale. This is the weakest effect of all age groups (OR closest to 1), suggesting any early birth-weight association has largely faded by adolescence.*
+*The birth weight association is not significant. OR = 1.09 (95% CI: 0.92–1.30, p = 0.32) (CI crosses 1). The sample size is14,397 teens. Among teenagers, low birth weight shows no significant association with asthma on either scale. This is the weakest effect of all age groups (OR closest to 1), suggesting any early birth-weight association has largely faded by adolescence.*
 
 ```{r}
 # Information for filling out Table 3
@@ -957,23 +898,53 @@ avg_comparisons(model_teens,   variables = "birth_weight_low")
 
 **Interpretation**
 
-- *These are the covariate-adjusted absolute differences (low vs normal birth weight) within each age stratum, and they populate the prevalence-difference column of Table 3.*
-
-- *Only preschool (3–5) reaches significance (2.6 pp, 95% CI 0.5–4.6). Toddlers (0.8 pp), middle childhood (1.8 pp), and teenagers (1.1 pp) all have confidence intervals that cross zero.*
-
-- *The pattern mirrors the odds ratios: the absolute effect of low birth weight on asthma risk is largest in early childhood and diminishes with age.*
+*These are the covariate-adjusted absolute differences (low vs normal birth weight) within each age stratum, and they populate the prevalence-difference column of Table 3. Only preschool (3–5) reaches significance (2.6 pp, 95% CI 0.5–4.6). Toddlers (0.8 pp), middle childhood (1.8 pp), and teenagers (1.1 pp) all have confidence intervals that cross zero. The pattern mirrors the odds ratios: the absolute effect of low birth weight on asthma risk is largest in early childhood and diminishes with age.*
 
 ------------------------------------------------------------------------
 
 # Results
 
-**TO BE COMPLETED**
+## Sample and descriptive findings
+
+Our analytic sample came from the 2023 NSCH, covering children ages 0 to 17. Table 1 shows characteristics by birth weight group. In the raw counts (Table 2), 661 of the low birth weight children had ever been diagnosed with asthma (14.3%), compared to 4,358 of the normal birth weight children (9.1%). Another 190 children with missing birth weight (8.7% with asthma) were not carried into the models. Crude asthma prevalence was also higher among low birth weight children in every age band, not just overall.
+
+## Staged regression models
+
+We fit three logistic regression models in stages and report both the odds ratio and the prevalence difference for each. The prevalence differences were estimated as average marginal effects using `avg_comparisons()`.
+
+In the unadjusted model (Model 1), low birth weight had an odds ratio of 1.67 (95% CI 1.52 to 1.82) and a prevalence difference of 5.2 percentage points (95% CI 4.1 to 6.2). Adding age (Model 2) barely changed either estimate (OR 1.67, 95% CI 1.53 to 1.83; prevalence difference 5.1, 95% CI 4.1 to 6.1). After adjusting for the full covariate set (Model 3), both estimates dropped but stayed significant: OR 1.21 (95% CI 1.08 to 1.35) and prevalence difference 1.68 percentage points (95% CI 0.66 to 2.71). Model 3 was fit on a smaller sample (50,580 versus 52,532) because some covariates had missing values. Among the other covariates, preterm birth and Black race were associated with higher odds of asthma and female sex with lower odds.
+
+## Age stratified models
+
+We re-ran the fully adjusted model separately within each age group (Table 3), dropping age as a covariate inside each stratum. The association was statistically significant only among preschoolers ages 3 to 5 (OR 1.44, 95% CI 1.11 to 1.86; prevalence difference 2.6, 95% CI 0.5 to 4.6). Toddlers ages 0 to 2 had an odds ratio in the same direction (1.37) but a wide interval crossing the null (0.86 to 2.14). Middle childhood ages 6 to 12 was borderline, with a lower confidence bound at exactly 1.00. Teenagers ages 13 to 17 showed no significant association (OR 1.09, 95% CI 0.92 to 1.30).
 
 ------------------------------------------------------------------------
 
 # Conclusions
 
-**TO BE COMPLETED**
+We found that low birth weight was associated with a higher prevalence of ever being diagnosed with asthma among U.S. children. The crude association was fairly strong (OR 1.67), and while it weakened substantially after adjusting for demographic and socioeconomic factors, it did not go away (adjusted OR 1.21, adjusted prevalence difference of about 1.7 percentage points). This tells us two things at once. First, part of what looks like a birth weight effect is really being carried by other correlated factors like preterm birth and socioeconomic status. Second, even after accounting for those factors, low birth weight still carries its own association with asthma.
+
+The age stratified results add some detail to this. The association is not uniform across childhood. It shows up most clearly in preschool aged children and essentially disappears by adolescence. One reasonable interpretation is that low birth weight is linked to earlier onset asthma, and that by the teenage years other pathways to an asthma diagnosis have caught up, diluting the birth weight signal. We cannot confirm that from this data, but it fits the pattern we see.
+
+From a public health standpoint, the odds ratio and the prevalence difference tell complementary stories. The adjusted odds ratio of 1.21 is modest, so low birth weight is not one of the strongest predictors of asthma we looked at. But because childhood asthma is common, even a modest association translates into a meaningful number of additional cases at the population level, which is what the prevalence difference is capturing.
+
+# Limitations
+
+There are several limitations worth being upfront about.
+
+First, and most importantly, this is a cross sectional study. The NSCH measures children at one point in time, so we are capturing the prevalence of an existing asthma diagnosis, not the incidence of new cases. This is why we reported prevalence differences rather than risk differences. It also means we cannot establish temporality or claim causation, so everything here should be read as an association, not a proven effect.
+
+Second, the exposure, outcome, and most covariates are parent reported rather than taken from medical records, which opens the door to recall bias and misclassification. A parent may not report a child's birth weight accurately, and "ever diagnosed with asthma" depends on the child having had access to care in the first place.
+
+Third, we used complete case analysis and let each model drop only the cases missing the variables it used. This keeps the simpler models from shrinking unnecessarily, but it means Model 3 is fit on a smaller sample than Models 1 and 2, so the attenuation across models is not entirely clean. We documented the missingness rather than imputing it.
+
+Fourth, there is almost certainly residual confounding. Variables like environmental exposures, family history of asthma, and maternal health during pregnancy are not in this dataset, and any of them could explain part of the association we are attributing to birth weight.
+
+Fifth, we excluded BMI because it is only collected for children ages 6 to 17 and cannot be placed in the right time order relative to birth weight. That was the right call for temporality, but it kept us from exploring a variable that plausibly sits on the pathway.
+
+Finally, the NSCH uses a complex survey sampling design. A fully rigorous analysis would incorporate the survey weights, so our confidence intervals in particular should be read with some caution.
+
+Despite these limitations, the pattern is consistent and lines up with prior literature: low birth weight is associated with higher asthma prevalence in children, the association is partly but not fully explained by other factors, and it is most apparent in early childhood.
 
 ------------------------------------------------------------------------
 
@@ -984,9 +955,7 @@ avg_comparisons(model_teens,   variables = "birth_weight_low")
 This appendix figure presents a forest plot summarizing the birth-weight odds ratios across the three overall models. Plotting the unadjusted, age-adjusted, and fully adjusted estimates together on a single axis, with a reference line at an odds ratio of 1, provides a visual summary of how the association attenuated as covariates were added. It presents the same results reported in Table 2 in graphical form.
 
 ```{r}
-#| label: fig-forest-appendix
-#| fig-cap: "Odds ratios for low birth weight across the three overall models."
-
+# Combine the four age-stratified models into one table of odds ratios with 95% CIs.
 strat <- bind_rows(
   tidy(model_toddler, exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Toddler (0-2)"),
   tidy(model_prek,    exponentiate = TRUE, conf.int = TRUE) |> mutate(age_group = "Preschool (3-5)"),
@@ -998,6 +967,7 @@ strat <- bind_rows(
                             levels = c("Teenager (13-17)", "Middle childhood (6-12)",
                                        "Preschool (3-5)", "Toddler (0-2)")))
 
+# Plot odds ratios with confidence intervals by age group.
 ggplot(strat, aes(x = estimate, y = age_group)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
   geom_pointrange(aes(xmin = conf.low, xmax = conf.high)) +
