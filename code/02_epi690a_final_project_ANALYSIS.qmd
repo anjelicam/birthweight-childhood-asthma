@@ -928,6 +928,10 @@ The age stratified results add some detail to this. The association is not unifo
 
 From a public health standpoint, the odds ratio and the prevalence difference tell complementary stories. The adjusted odds ratio of 1.21 is modest, so low birth weight is not one of the strongest predictors of asthma we looked at. But because childhood asthma is common, even a modest association translates into a meaningful number of additional cases at the population level, which is what the prevalence difference is capturing.
 
+# Strengths
+
+This project had some clear strengths. It drew on a large, nationally representative sample of U.S. children, which gives the estimates decent precision and makes them more generalizable than a single clinic or regional sample would be. We also ran both a staged multivariable analysis and age stratified analyses, which let us assess potential confounding and see how the association changes across childhood rather than assuming it holds steady at every age. Finally, we reported both the odds ratio and the prevalence difference, so the results capture the relative strength of the association and its absolute magnitude at the population level.
+
 # Limitations
 
 There are several limitations worth being upfront about.
